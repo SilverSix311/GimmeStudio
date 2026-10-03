@@ -161,6 +161,9 @@ def open_workspace(data):
                 p=subprocess.Popen([str(runtime_paths.path('python', INSTALL)), '-s', str(PRIVATE/'Harness/server.py')], cwd=PRIVATE,
                     env=env, stdin=subprocess.DEVNULL, stdout=out, stderr=err, creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
             (PRIVATE/'Logs/harness.pid').write_text(str(p.pid))
+            # Reap the child when it exits, including termination by a different
+            # launcher. Otherwise Unix can retain a zombie until SFW shuts down.
+            threading.Thread(target=p.wait, daemon=True).start()
         for _ in range(40):
             try:
                 if request(8290,'api/workspace')['mode']=='incognito':
