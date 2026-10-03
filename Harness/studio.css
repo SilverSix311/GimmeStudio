@@ -10,3 +10,47 @@
 .agent-settings label{display:flex;flex-direction:column;gap:6px}.agent-settings label:has(input[type=checkbox]){flex-direction:row;align-items:center}.agent-settings input[type=checkbox]{width:18px;height:18px;flex:none}.agent-settings input[type=number]{width:120px}#agent-run .row strong{overflow-wrap:anywhere}
 
 .incognito-banner{border:1px solid #ad6fce;background:#251032;padding:12px 16px;border-radius:10px;color:#edd9ff}.incognito #workspace-toggle{border-color:#dc91ff;color:#edd9ff}
+
+/* Incognito / After Hours. All styles are scoped; no external fonts or images. */
+body.incognito{--ink:#0b080a;--rouge:#e12b4f;--blush:#f4a9b3;--ivory:#f9eae5;background:radial-gradient(ellipse at 80% 0%,#59102540,transparent 48%),radial-gradient(ellipse at 10% 95%,#3d132d40,transparent 55%),#0b080a;color:var(--ivory)}
+.incognito ::selection{background:#a61739;color:#fff}
+.incognito aside{background:linear-gradient(165deg,#211016e8,#0c090bee 48%);border-right:1px solid #67303d65;box-shadow:12px 0 70px #0003}
+.incognito .brand{color:#fff0e9;letter-spacing:-1px}.incognito .brand img{filter:grayscale(1) sepia(.6) saturate(3) hue-rotate(298deg);box-shadow:0 0 24px #f1324930}
+.incognito .eyebrow{color:#dc949e;letter-spacing:2.2px;font-size:10px}
+.incognito nav a{color:#cdb9bd;border:1px solid transparent;transition:background .2s,color .2s}
+.incognito nav a:hover{background:#40192365;color:#fff0ed;text-decoration:none}
+.incognito nav a.active{background:linear-gradient(100deg,#84182f70,#3e15252a);border-color:#99344950;border-left:3px solid #ef4563;color:#ffd7db;box-shadow:inset 0 1px #f8b5b510}
+.incognito .aside-foot,.incognito small,.incognito .muted{color:#c3a6ad}.incognito .dot{background:#ee5069;box-shadow:0 0 12px #ee506970}
+.incognito h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:38px;letter-spacing:-1.3px;color:#fae9e3}
+.incognito h2{color:#f8e5df}.incognito p{color:#ceb7bd}.incognito label{color:#dec4ca}
+.incognito a,.incognito summary,.incognito .badge,.incognito .transition{color:#f3a5b2}
+.incognito button{background:linear-gradient(180deg,#301a22,#211118);border:1px solid #71414c90;border-radius:8px;color:#f7dedf;box-shadow:inset 0 1px #ffe2df08;transition:background .2s,border-color .2s,box-shadow .2s}
+.incognito button:hover{background:#48202d;border-color:#b35a6d;box-shadow:0 4px 24px #b4143220}
+.incognito .primary{background:linear-gradient(165deg,#f04d68 0%,#c5193d 48%,#901331);border-color:#ed657280;color:#fff;font-weight:650;box-shadow:inset 0 1px #ffc6c578,0 5px 22px #bc123332}
+.incognito .primary:hover{background:linear-gradient(165deg,#ff6a80,#d32046 60%,#a61b3a)}
+.incognito :focus-visible{outline:2px solid #ffacb8;outline-offset:4px}
+.incognito input,.incognito select,.incognito textarea{background:#100c10;border-color:#67414d;color:#fae5e8;accent-color:#df3659}
+.incognito input::placeholder,.incognito textarea::placeholder{color:#ac8993}
+.incognito .card,.incognito .panel{background:linear-gradient(145deg,#29151dcc,#171014);border:1px solid #59313e90;box-shadow:inset 0 1px #ffe0d908,0 12px 40px #0002;border-radius:13px}
+.incognito .card img,.incognito .card video,.incognito .compare img,.incognito .compare video{background:#0b080b}
+.incognito .pill{background:#6c173535;color:#f4b3bd;border:1px solid #8b364650}
+.incognito .hero{position:relative;isolation:isolate;overflow:hidden;min-height:350px;padding:42px;border-radius:18px;background:radial-gradient(ellipse at 79% 48%,#7c183d85,transparent 47%),linear-gradient(120deg,#271018,#160b12 52%,#3d1224);border:1px solid #99435770;box-shadow:inset 0 1px #ffaeb71c,0 25px 75px #0004}
+.incognito .hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,#150b12 10%,#1a0b12d9 40%,transparent 67%),repeating-linear-gradient(96deg,transparent 0 105px,#00000009 106px 108px);pointer-events:none}
+.incognito .hero::after{content:'';position:absolute;inset:-22% -4% -25% 38%;z-index:-2;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20680%20480%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22lip%22%20x2%3D%22.3%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23ff5d70%22%2F%3E%3Cstop%20offset%3D%22.32%22%20stop-color%3D%22%23dc153f%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23680a25%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22lower%22%20x2%3D%22.5%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2365031e%22%2F%3E%3Cstop%20offset%3D%22.48%22%20stop-color%3D%22%23bd1234%22%2F%3E%3Cstop%20offset%3D%22.73%22%20stop-color%3D%22%23f63b59%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23870d2b%22%2F%3E%3C%2FlinearGradient%3E%3Cfilter%20id%3D%22blur%22%3E%3CfeGaussianBlur%20stdDeviation%3D%229%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cg%20opacity%3D%22.65%22%20fill%3D%22%23020204%22%3E%3Cpath%20d%3D%22M450%2048C480%2070%20445%20120%20456%20193L463%20398Q452%20432%20447%20395L440%20191C422%20150%20444%20107%20424%2079Z%22%2F%3E%3Cpath%20d%3D%22M517%2075Q555%2085%20538%20156L545%20289Q538%20325%20530%20289L524%20161Z%22%2F%3E%3Cpath%20d%3D%22M570%20101L588%20102L581%20240Q575%20260%20571%20239Z%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate%28100%20100%29%20rotate%28-14%20220%20120%29%22%3E%3Cellipse%20cx%3D%22220%22%20cy%3D%22184%22%20rx%3D%22200%22%20ry%3D%2242%22%20fill%3D%22%23a00d31%22%20opacity%3D%22.28%22%20filter%3D%22url%28%23blur%29%22%2F%3E%3Cpath%20d%3D%22M27%20141C92%20119%20115%2059%20169%2081C192%2091%20206%20104%20221%20100C242%2064%20271%2063%20300%2079C345%20104%20365%20127%20429%20142C353%20158%20299%20166%20222%20160C139%20169%2073%20151%2027%20141Z%22%20fill%3D%22url%28%23lip%29%22%2F%3E%3Cpath%20d%3D%22M27%20141C111%20163%20147%20164%20222%20158C306%20166%20362%20150%20429%20142C378%20173%20351%20220%20279%20238C180%20262%2077%20215%2027%20141Z%22%20fill%3D%22url%28%23lower%29%22%2F%3E%3Cpath%20d%3D%22M30%20142C120%20143%20176%20129%20223%20135C279%20125%20354%20148%20425%20143C340%20162%20298%20170%20222%20160C146%20174%2085%20155%2030%20142%22%20fill%3D%22%2320060e%22%2F%3E%3Cpath%20d%3D%22M116%20115Q153%2084%20180%20104M241%20101Q270%2084%20300%20103%22%20stroke%3D%22%23ffb2b1%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%20opacity%3D%22.65%22%2F%3E%3Cpath%20d%3D%22M164%20211Q218%20231%20279%20211%22%20stroke%3D%22%23ff919a%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%20opacity%3D%22.68%22%2F%3E%3Cpath%20d%3D%22M190%20221Q214%20226%20237%20221%22%20stroke%3D%22%23ffe2d9%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%20opacity%3D%22.7%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/contain no-repeat;pointer-events:none;opacity:.95}
+.incognito .hero h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-style:italic;letter-spacing:-1.7px;font-size:clamp(36px,3.5vw,57px);line-height:1.1;max-width:60%;margin:22px 0 14px;text-wrap:balance}
+.incognito .hero p{max-width:53%;color:#dfc5cc;font-size:15px}.incognito .hero .actions{margin-top:14px}
+.incognito .stats{gap:0;border-top:1px solid #63334470;border-bottom:1px solid #63334470;padding:23px 0;margin:26px 0;color:#c4a3ad}
+.incognito .stats>div{padding:0 35px;border-right:1px solid #63334470}.incognito .stats>div:first-child{padding-left:0}.incognito .stats>div:last-child{border:0}
+.incognito .stats b{color:#f4c5cd;font-family:Georgia,serif;font-weight:400;font-size:38px;margin-bottom:5px}
+.incognito .incognito-banner{display:block;background:linear-gradient(90deg,#6b183329,transparent);border:0;border-left:2px solid #c63a56;border-radius:0;color:#c99aa5;font-size:11px;letter-spacing:1.1px;padding:10px 14px;margin:0 0 24px;line-height:1.6}
+.incognito #workspace-toggle{color:#ffd7de;border-color:#a34359;background:#59152b50;font-size:12px}
+.incognito dialog{background:linear-gradient(145deg,#2d1820,#170d14);border-color:#945067;color:#ffe9eb;box-shadow:0 35px 130px #000c}
+.incognito dialog::backdrop{background:#0b0309c9;backdrop-filter:blur(8px)}
+.incognito pre,.incognito .help-article pre{background:#100a10;color:#ead1d8}
+.incognito .empty{border-color:#74424f;background:#21121a55}.incognito .empty h2{color:#efc4cf}
+.incognito .row,.incognito .help-article footer{border-color:#55313e}.incognito .chat-message{background:#27151e;border-color:#f26683}.incognito .chat-message.assistant{border-color:#c0a8ae}
+.incognito #notice{background:#361623;border-color:#f291a4}.incognito .help-article h3{color:#f4a4b5}
+.incognito .help-index nav a:hover,.incognito .help-index nav a[aria-current]{background:#441a2b;border-left-color:#ef4563}
+@media(max-width:1100px){.incognito .hero{padding:30px}.incognito .hero h2{max-width:68%}.incognito .hero::after{left:30%;opacity:.7}.incognito header{align-items:flex-start;flex-wrap:wrap}}
+@media(max-width:600px){.incognito h1{font-size:32px}.incognito .hero{min-height:380px;padding:24px;justify-content:flex-end}.incognito .hero::after{inset:-35% -23% 15% 14%;opacity:.65}.incognito .hero::before{background:linear-gradient(0deg,#190d15 2%,#1b0c15d9 45%,transparent)}.incognito .hero h2,.incognito .hero p{max-width:100%}.incognito .hero h2{font-size:38px}.incognito .stats>div{padding:0 19px}.incognito .stats b{font-size:30px}.incognito .incognito-banner{letter-spacing:.5px}.incognito .header-actions{gap:6px}.incognito .header-actions button{padding:9px 10px}}
+@media(prefers-reduced-motion:reduce){.incognito *{transition:none!important;animation:none!important}}

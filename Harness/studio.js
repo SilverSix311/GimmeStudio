@@ -83,6 +83,6 @@ safe(async()=>{
  toggle.textContent=privateMode?'Incognito ON - Return to SFW':'SFW - Open Incognito';
  toggle.title=workspace.message;
  document.body.classList.toggle('incognito',privateMode);
- if(privateMode){document.title='GimmeStudio - Incognito';const banner=document.createElement('p');banner.className='incognito-banner';banner.textContent='INCOGNITO - Separate persistent projects, files and history. Shared SFW models are available. Not encrypted or auto-deleted.';document.querySelector('header').after(banner);}
+ if(privateMode){document.title='GimmeStudio - After Hours';document.querySelector('aside > .eyebrow').textContent='AFTER HOURS / PRIVATE STUDIO';const banner=document.createElement('p');banner.className='incognito-banner';banner.textContent='INCOGNITO / Separate projects. Shared models. Saved locally.';banner.title=workspace.message;document.querySelector('header').after(banner);}
  toggle.onclick=safe(async()=>{toggle.disabled=true;try{const result=await api('/api/workspace/open',{mode:privateMode?'sfw':'incognito'});location.assign(result.url);}finally{toggle.disabled=false;}});
 })();
