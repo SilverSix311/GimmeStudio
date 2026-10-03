@@ -47,6 +47,18 @@ class StudioTests(unittest.TestCase):
         self.assertEqual(store.get(self.q['id'])['elements'],[])
         self.assertEqual(len(store.history(self.p['id'])),3)
 
+    def test_edit_shot_preserves_adapter_stack(self):
+        stack=[dict(name='character.safetensors',family='krea2',strength=.65)]
+        self.command('put',kind='shots',value=dict(name='Opening',loras=stack))
+        shot=self.p['shots'][0]
+        self.command('put',kind='shots',id=shot['id'],value=dict(name='New opening',prompt='New action'))
+        self.assertEqual(self.p['shots'][0]['loras'],stack)
+
+    def test_cross_project_last_frame_rejected(self):
+        asset=self.image()
+        with self.assertRaises(ValueError):
+            api.clean_record(self.q,'shots',dict(name='Other',last_frame=asset['id']))
+
     def test_stale_revision_cannot_clobber_work(self):
         old = self.p['revision']
         self.command('project',title='Changed',brief='',style='')
