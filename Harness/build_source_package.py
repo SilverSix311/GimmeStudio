@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 MODULES='server studio_store studio_api studio_cli studio advanced help production local_ai local_agent agent agent_canvas comfy_service visible_workflow advanced_studio masked_edit cloud_handoff media_worker blender_scene blender_saved portable_browser laya_decision build_help build_source_package initialize_portable doctor runtime_paths setup_unix launch_studio smoke_portable'.split()
 
 def build():
- files=[ROOT/name for name in ('README.md','Environment.ps1','GimmeStudio.cmd','Start-GimmeStudio.ps1','Stop-Local-Studio.ps1','Setup-GimmeStudio.cmd','Setup-GimmeStudio.ps1','Docs/INSTALL.md','NOTICE.md','Environment.sh','Setup-GimmeStudio.sh','GimmeStudio.sh','GimmeStudio.command')]
+ files=[ROOT/name for name in ('README.md','Environment.ps1','GimmeStudio.cmd','Start-GimmeStudio.ps1','Stop-Local-Studio.ps1','Setup-GimmeStudio.cmd','Setup-GimmeStudio.ps1','Docs/INSTALL.md','NOTICE.md','.gitattributes','Environment.sh','Setup-GimmeStudio.sh','GimmeStudio.sh','GimmeStudio.command')]
  for folder in ('Config','Integrations','.github'):
   files += [p for p in (ROOT/folder).rglob('*') if p.is_file() and (p.suffix in ('.json','.txt','.py','.js','.yml','.md','.png') or p.name=='LICENSE') and '__pycache__' not in p.parts]
  for name in MODULES:

@@ -13,7 +13,7 @@ for name in harness planner comfy; do
 done
 mkdir -p "$STUDIO_ROOT/Downloads" "$STUDIO_ROOT/Tools/uv"
 key="$(uname -s)-$(uname -m)"
-row="$(awk -v key="$key" '$1==key {print $2 " " $3}' "$STUDIO_ROOT/Config/uv-downloads.txt")"
+row="$(awk -v key="$key" '{sub(/\r$/, "")} $1==key {print $2 " " $3}' "$STUDIO_ROOT/Config/uv-downloads.txt")"
 if [[ -z "$row" ]]; then echo "Unsupported platform: $key" >&2; exit 1; fi
 read -r url digest <<< "$row"
 archive="$STUDIO_ROOT/Downloads/uv-$key.tar.gz"
