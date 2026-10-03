@@ -1,0 +1,141 @@
+{
+  "1": {
+    "inputs": {
+      "unet_name": "krea2_turbo_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader"
+  },
+  "2": {
+    "inputs": {
+      "clip_name": "qwen3vl_4b_fp8_scaled.safetensors",
+      "type": "krea2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader"
+  },
+  "3": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader"
+  },
+  "4": {
+    "inputs": {
+      "text": "Original character in a cinematic scene.",
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "5": {
+    "inputs": {
+      "conditioning": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut"
+  },
+  "6": {
+    "inputs": {
+      "seed": 4102026,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.55,
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "4",
+        0
+      ],
+      "negative": [
+        "5",
+        0
+      ],
+      "latent_image": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "KSampler"
+  },
+  "7": {
+    "inputs": {
+      "samples": [
+        "6",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "VAEDecode"
+  },
+  "8": {
+    "inputs": {
+      "filename_prefix": "gimmestudio/draft",
+      "images": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "SaveImage"
+  },
+  "9": {
+    "inputs": {
+      "image": "reference.png"
+    },
+    "class_type": "LoadImage"
+  },
+  "10": {
+    "inputs": {
+      "width": 850,
+      "height": 1480,
+      "x": 60,
+      "y": 15,
+      "image": "reference.png"
+    },
+    "class_type": "ImageCrop"
+  },
+  "11": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "width": 1200,
+      "height": 2048,
+      "crop": "center",
+      "image": "reference.png"
+    },
+    "class_type": "ImageScale"
+  },
+  "12": {
+    "inputs": {
+      "pixels": [
+        "11",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "VAEEncode"
+  },
+  "13": {
+    "inputs": {
+      "filename_prefix": "gimmestudio/draft",
+      "images": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "SaveImage"
+  }
+}

@@ -1,0 +1,6 @@
+GimmeStudio portable source release. Run Setup-GimmeStudio.cmd to provision its runtime.
+Excluded: credentials, models, binaries, chats, projects, rendered media, private configuration, character canon and personal wallpaper. The GimmeStudio logo is intentionally included.
+Setup provisions pinned core runtimes. Optional models and advanced adapters keep their own licenses; see Docs/INSTALL.md.
+Existing portable installations should retain their local configuration and workflow library.
+Documentation source: Docs/help.json. Build with Harness/build_help.py.
+GitHub destination and visibility must be selected before publication.

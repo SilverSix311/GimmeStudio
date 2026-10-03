@@ -1,0 +1,34 @@
+{
+  "features": [
+    {
+      "name": "Projects and character workshop",
+      "status": "Available",
+      "detail": "Create, edit and organize your own projects, characters, scenes and objects.",
+      "page": "characters"
+    },
+    {
+      "name": "Local AI agent",
+      "status": "Optional runtime and model required",
+      "detail": "Install with -WithLocalAI and configure a model. Defaults off with approval required.",
+      "page": "ai"
+    },
+    {
+      "name": "Image and video generation",
+      "status": "Models and nodes required",
+      "detail": "Sanitized Krea/reference/H3 presets included. Model weights are separate. Validate each recipe in ComfyUI.",
+      "page": "cinema"
+    },
+    {
+      "name": "3D set workshop",
+      "status": "Editor available; rendering optional",
+      "detail": "Portable Blender can be installed with -WithBlender.",
+      "page": "sets3d"
+    },
+    {
+      "name": "Voice, lip-sync, transcription and training",
+      "status": "Additional setup required",
+      "detail": "Adapters exist but their specialized dependencies and models are not provisioned by core setup.",
+      "page": "help"
+    }
+  ]
+}

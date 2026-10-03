@@ -1,0 +1,680 @@
+{
+  "title": "GimmeStudio Handbook",
+  "updated": "2026-10-02",
+  "pages": [
+    {
+      "id": "Start-here",
+      "title": "Start here: your first film",
+      "summary": "A complete path from an idea to a local preview.",
+      "tool": "overview",
+      "sections": [
+        {
+          "title": "Before you begin",
+          "kind": "list",
+          "items": [
+            "Start GimmeStudio.cmd from the portable folder. The dashboard opens at http://127.0.0.1:8190.",
+            "Use the Production selector to choose a project, or New project to create one. Tutorials work with any production.",
+            "For your first test, make one character, one scene and one five-second shot. Expand after the first preview works."
+          ]
+        },
+        {
+          "title": "Make your first preview",
+          "kind": "steps",
+          "items": [
+            "Open Project brief → Edit project brief. Save a name, story goal, audience and visual style.",
+            "Open Character workshop → Create character. Describe appearance, clothing and personality; save the design.",
+            "Choose Generate design. Start ComfyUI using the header control; unload the AI Director model first if one is loaded.",
+            "Stage the image workflow, then open ComfyUI canvas. Click Load studio shot, inspect the graph, and click Run.",
+            "After generation finishes, choose Collect completed takes. Open Asset library and review the image.",
+            "Create a scene in Scenes, then add a shot with a clear action and camera direction. Select your reference image when generating its take.",
+            "For a quick animatic, add the still to Timeline & sound and set its duration. For motion, first generate a video take through Cinema Studio.",
+            "Save the timeline, then render it. Play the output and review composition, timing and sound.",
+            "If there is speech, transcribe the final rendered video in Dialogue & subtitles. Correct the captions and download SRT or VTT.",
+            "Export a local VISION package from Export & handoff. Cloud generation is a separate choice."
+          ]
+        },
+        {
+          "title": "What success looks like",
+          "kind": "paragraph",
+          "items": [
+            "You have a saved project, reviewed reference, shot, playable local preview and a portable export. A successful render proves the pipeline works; it does not automatically approve the art."
+          ]
+        }
+      ],
+      "related": [
+        "Projects-and-characters",
+        "Generate-images-and-video",
+        "Timeline-and-sound"
+      ]
+    },
+    {
+      "id": "Projects-and-characters",
+      "title": "Projects, characters and scenes",
+      "summary": "Create worlds, edit designs, and keep references attached to the right production.",
+      "tool": "characters",
+      "sections": [
+        {
+          "title": "Build a reusable world",
+          "kind": "steps",
+          "items": [
+            "Choose New project and give the production a name. Edit its brief and style on Project brief.",
+            "In Character workshop choose Create character. Save name, pronouns, design description and continuity notes. LoRA trigger is optional.",
+            "Import reference images through Asset library, then Edit design to select those references. Multiple references can be selected with Ctrl/click.",
+            "Use Locations & objects for environments and props. These are saved world elements, just like characters.",
+            "In Scenes, create a setting with description, lighting, palette and cast. Add shots from that scene to retain the link.",
+            "Use Edit design whenever you want to change a character. Generate design creates a new exploration; it does not replace approved references by itself."
+          ]
+        },
+        {
+          "title": "Keep identity consistent",
+          "kind": "list",
+          "items": [
+            "State stable physical details separately from the action of a particular shot.",
+            "Review new images before assigning them as references. Fixed seeds alone do not lock identity.",
+            "The project selector changes the working production. Saved chats and elements stay with their project.",
+            "Trash removes an item from active lists. Restore it in Jobs & history."
+          ]
+        }
+      ],
+      "related": [
+        "Assets-and-review",
+        "Creative-board",
+        "Generate-images-and-video"
+      ]
+    },
+    {
+      "id": "Generate-images-and-video",
+      "title": "Generate images and video",
+      "summary": "Stage a workflow, inspect it visibly, run it, and collect the result.",
+      "tool": "cinema",
+      "sections": [
+        {
+          "title": "Generate a take",
+          "kind": "steps",
+          "items": [
+            "Start ComfyUI from the dashboard header. If AI Director has a model loaded, unload it first.",
+            "Use Generate design on a character or Generate take for a shot in Cinema Studio.",
+            "Choose a new Krea image, a reference-guided Krea image, or the H3 image-to-video recipe. Reference and video modes need an image asset.",
+            "Write a specific prompt. For a shot, fill in its action, framing, movement, lighting and palette as needed.",
+            "Stage the workflow. In ComfyUI canvas click Load studio shot. Your previous canvas is backed up before replacement.",
+            "Inspect models, prompt, reference, seed and output settings, then click the native Run button.",
+            "Wait for completion and choose Collect completed takes. Review the result in Asset library and select it for the shot if it is the take you want."
+          ]
+        },
+        {
+          "title": "Settings that matter",
+          "kind": "list",
+          "items": [
+            "Krea dimensions must be multiples of eight, at least 256 pixels, and at most 2.5 megapixels. Larger images use more memory.",
+            "Reference-guided Krea uses a starting image and denoise strength. Higher denoise allows more change; it is not a semantic mask editor.",
+            "The measured H3 draft preset is 608 × 352, 124 frames, 24 fps, with native audio. A shot duration field does not silently change that generation recipe.",
+            "Camera controls describe prompt intent. They do not guarantee physically simulated camera behavior.",
+            "A 1080p timeline can contain lower-resolution drafts; changing canvas size does not recover missing detail."
+          ]
+        }
+      ],
+      "related": [
+        "ComfyUI-workflows",
+        "Masked-image-editing",
+        "Assets-and-review"
+      ]
+    },
+    {
+      "id": "ComfyUI-workflows",
+      "title": "ComfyUI workflows and memory",
+      "summary": "Watch generation, import recipes and switch GPU workloads safely.",
+      "tool": "workflows",
+      "sections": [
+        {
+          "title": "Use the visible canvas",
+          "kind": "steps",
+          "items": [
+            "Open ComfyUI canvas or its full-size link at http://127.0.0.1:8188.",
+            "Choose a registered workflow and Stage workflow, or import a canvas JSON as a project recipe.",
+            "Click Load studio shot inside ComfyUI. Enable Follow new studio workflows if you want subsequent staged graphs to appear automatically.",
+            "Edit nodes and run through the frontend. Collect completed takes after completion.",
+            "Keep the canvas and exact execution record with the result; GimmeStudio collects these for project-tagged runs."
+          ]
+        },
+        {
+          "title": "Switch between AI and generation",
+          "kind": "list",
+          "items": [
+            "Use one heavy model worker at a time. Unload the local AI model before starting ComfyUI.",
+            "Unload ComfyUI in the dashboard header to free its RAM and GPU allocations. Busy queues are protected.",
+            "Speech, lip-sync and background Blender jobs stop idle owned servers before starting. They release their allocations after finishing.",
+            "An interactive Blender window is under your control; avoid starting another heavy GPU render alongside it.",
+            "An imported workflow is not automatically compatible. Read its model and custom-node requirements and the Tool catalog status."
+          ]
+        }
+      ],
+      "related": [
+        "AI-Director",
+        "Troubleshooting",
+        "Models-and-training"
+      ]
+    },
+    {
+      "id": "Assets-and-review",
+      "title": "Assets, comparisons and review",
+      "summary": "Import media, compare versions and select the take you want.",
+      "tool": "assets",
+      "sections": [
+        {
+          "title": "Organize your media",
+          "kind": "steps",
+          "items": [
+            "Upload media from Asset library, or put larger files under Input and use workspace-relative import. Browser uploads are limited to 64 MB per file.",
+            "Choose Edit / review to name the asset, assign a folder label, add notes and set its review status.",
+            "Select two comparison checkboxes to compare variants. Examine identity, hands, text, framing and continuity.",
+            "Use in shot selects the current take for a shot. Approval and shot selection are separate decisions.",
+            "For training images, assign an element, write an image-specific caption, and choose train or validation split."
+          ]
+        },
+        {
+          "title": "Understand the records",
+          "kind": "paragraph",
+          "items": [
+            "Imported media is copied into the project asset directory using content hashes. Reviews, folders and notes are metadata; they do not alter the original pixels. Generated outputs start pending review. Keep rejected variants when their notes explain what to avoid."
+          ]
+        }
+      ],
+      "related": [
+        "Models-and-training",
+        "Timeline-and-sound",
+        "Backups-and-export"
+      ]
+    },
+    {
+      "id": "Creative-board",
+      "title": "Creative board",
+      "summary": "Arrange references and notes into a visual story plan.",
+      "tool": "board",
+      "sections": [
+        {
+          "title": "Plan visually",
+          "kind": "steps",
+          "items": [
+            "Open Creative board and choose Add card. Select an existing element, scene, shot or asset, or create a text note.",
+            "Drag cards by their headers. Add annotations using Edit note.",
+            "Choose Connect cards to show a relationship between two cards.",
+            "Click Save board before leaving. Reopen it to continue the layout."
+          ]
+        },
+        {
+          "title": "What connections mean",
+          "kind": "paragraph",
+          "items": [
+            "Board connections describe creative relationships. They do not run inference or automatically schedule generation. Use a ComfyUI workflow for execution."
+          ]
+        }
+      ],
+      "related": [
+        "Projects-and-characters",
+        "ComfyUI-workflows"
+      ]
+    },
+    {
+      "id": "Masked-image-editing",
+      "title": "Masked image editing",
+      "summary": "Change a selected area while preserving unpainted pixels.",
+      "tool": "masked",
+      "sections": [
+        {
+          "title": "Make an edit",
+          "kind": "steps",
+          "items": [
+            "Start ComfyUI and open Masked image editor. Choose a source image from the project.",
+            "Paint white over the area to change. Adjust Brush size; enable Erase to remove part of the mask. Clear mask starts over; Select all enables a full-image change.",
+            "Write an instruction such as: Change the shirt to turquoise while preserving the pose and fabric texture.",
+            "Set Feather pixels for a softer boundary. Feathering expands the affected region; keep it away from details you must preserve.",
+            "Choose Stage visible editing workflow. In ComfyUI click Load studio shot, inspect the mask and reference, then Run.",
+            "Collect the completed take and compare it with the source. Check both the edited area and the boundary."
+          ]
+        },
+        {
+          "title": "How it works",
+          "kind": "paragraph",
+          "items": [
+            "Qwen Image Edit 2511 sees the reference and instruction. A final mask composite puts the generated region over the original. This preserves pixels outside the feathered mask, but the model can still change shape or texture inside it. The recipe uses the matching four-step Lightning LoRA. This tool edits still images, not tracked regions in moving video."
+          ]
+        }
+      ],
+      "related": [
+        "Generate-images-and-video",
+        "Assets-and-review"
+      ]
+    },
+    {
+      "id": "Blender-and-3D",
+      "title": "Blender and the 3D set workshop",
+      "summary": "Block out a set, render it locally, and continue editing in portable Blender.",
+      "tool": "sets3d",
+      "sections": [
+        {
+          "title": "Create a blockout",
+          "kind": "steps",
+          "items": [
+            "Open 3D set workshop. Name the scene and add cubes, spheres, cylinders, cones or planes.",
+            "Select an object and edit its name, color, position, scale and rotation. Enter X, Y, Z numbers separated by commas. Rotation uses degrees.",
+            "Drag the viewport to orbit, scroll to zoom, and right-drag to pan. Choose Use this camera angle when the framing is right.",
+            "Set lens, render size and key-light power. Save scene.",
+            "Choose Render in Blender. Watch Jobs & history; the result appears in Assets with a saved editable .blend file."
+          ]
+        },
+        {
+          "title": "Continue in native Blender",
+          "kind": "steps",
+          "items": [
+            "Reload the project after the render, then find its render card in 3D set workshop.",
+            "Choose Edit in portable Blender. Make changes and save the .blend in Blender.",
+            "Back in GimmeStudio choose Re-render saved Blender edits for that card. The new render is collected as another asset.",
+            "Use that image as a reference for a generation or add it to an animatic."
+          ]
+        },
+        {
+          "title": "Choose the right render button",
+          "kind": "paragraph",
+          "items": [
+            "Render in Blender rebuilds the blockout from the saved dashboard scene. Re-render saved Blender edits renders the native .blend you edited, retaining those Blender changes. Open portable Blender launches the bundled application. Preferences and worker outputs stay inside this installation."
+          ]
+        }
+      ],
+      "related": [
+        "Assets-and-review",
+        "ComfyUI-workflows"
+      ]
+    },
+    {
+      "id": "Voices-and-lip-sync",
+      "title": "Voices and lip-sync",
+      "summary": "Save a voice profile, record dialogue and animate a still portrait.",
+      "tool": "voices",
+      "sections": [
+        {
+          "title": "Record dialogue",
+          "kind": "steps",
+          "items": [
+            "Open Voices & lip-sync and choose Create voice.",
+            "Name the profile, select a base speaker, write performance direction and keep a seed for repeatable experiments. Save changes.",
+            "Choose Record dialogue on the profile. Enter the spoken text and submit.",
+            "Watch Jobs & history until the job completes. Listen to the new audio in Assets before using it. The input script and actual duration are saved with the take."
+          ]
+        },
+        {
+          "title": "Animate a portrait",
+          "kind": "steps",
+          "items": [
+            "In Portrait lip-sync, choose a still image and an audio asset up to 30 seconds long.",
+            "Draw a rectangle around the face, covering the forehead through the chin. Avoid a rectangle containing most of the body.",
+            "Choose Generate lip-sync locally. Wait for its video asset, then play it at normal speed.",
+            "Check articulation, identity, glasses and the mouth boundary. Try a clearer, more frontal portrait if the result distorts."
+          ]
+        },
+        {
+          "title": "Current limits",
+          "kind": "list",
+          "items": [
+            "Qwen3-TTS profiles combine a preset speaker with performance direction; this interface does not clone voices.",
+            "MuseTalk uses a manually selected face region on a still image. It does not track a face in moving footage.",
+            "Stylized characters, angled faces and hands near the mouth remain experimental. A completed render needs creative review.",
+            "The saved script is not a timed transcript. Use Dialogue & subtitles for actual audio transcription."
+          ]
+        }
+      ],
+      "related": [
+        "Dialogue-and-subtitles",
+        "Timeline-and-sound"
+      ]
+    },
+    {
+      "id": "Timeline-and-sound",
+      "title": "Timeline and sound",
+      "summary": "Turn selected takes into a local edit with transitions and audio layers.",
+      "tool": "timeline",
+      "sections": [
+        {
+          "title": "Build the edit",
+          "kind": "steps",
+          "items": [
+            "Open Timeline & sound. Add the image and video assets you want in sequence.",
+            "Reorder clips and set source trims or still durations. Adjust clip audio gain, brightness or saturation where needed.",
+            "Choose output resolution and frame rate. Set the transition and transition length to suit the pacing.",
+            "Add audio layers for dialogue, music or ambience. Set source in/out, timeline offset and volume. Enable ducking when appropriate, then listen to the result.",
+            "Save timeline and render. The new preview appears in Assets and on the timeline page after reload.",
+            "Play the complete edit, checking transitions, audio joins, timing and final duration. Adjust and render a new version as needed."
+          ]
+        },
+        {
+          "title": "Professional transitions",
+          "kind": "paragraph",
+          "items": [
+            "Use transitions to support the scene. Fades can bridge time or atmosphere, but a clean motivated cut can be more natural between continuous actions. Avoid masking a continuity problem with a long dissolve. Rendering at 1080p changes the output canvas, not the original quality of a low-resolution draft."
+          ]
+        }
+      ],
+      "related": [
+        "Dialogue-and-subtitles",
+        "Backups-and-export"
+      ]
+    },
+    {
+      "id": "Dialogue-and-subtitles",
+      "title": "Dialogue and subtitles",
+      "summary": "Transcribe recorded speech and export editable SRT/VTT files.",
+      "tool": "captions",
+      "sections": [
+        {
+          "title": "Create subtitles",
+          "kind": "steps",
+          "items": [
+            "Choose the audio or video asset in Dialogue & subtitles. For final delivery, choose the final timeline render so timestamps match the edit.",
+            "Click Transcribe locally and wait for the job. Whisper creates draft words and timings from the real audio.",
+            "Reload the project, open Edit captions and listen while correcting text and timing.",
+            "Each line uses: start seconds | end seconds | spoken text. Example: 0.4 | 2.8 | Every sandcastle starts with one small try.",
+            "Mark the captions reviewed only after checking them, then save. Download SRT or VTT from the caption record.",
+            "Import the subtitle file into your publishing or editing tool and check its alignment there."
+          ]
+        },
+        {
+          "title": "Keep versions aligned",
+          "kind": "paragraph",
+          "items": [
+            "Re-editing the video can change every later timestamp. Transcribe or retime the new final render after changes. Subtitle sidecars are separate files; this interface does not automatically burn captions into the video pixels."
+          ]
+        }
+      ],
+      "related": [
+        "Voices-and-lip-sync",
+        "Timeline-and-sound"
+      ]
+    },
+    {
+      "id": "AI-Director",
+      "title": "AI Director and Laya",
+      "summary": "Use local chat for drafts without spending cloud tokens.",
+      "tool": "ai",
+      "sections": [
+        {
+          "title": "Work with the local assistant",
+          "kind": "steps",
+          "items": [
+            "Unload ComfyUI, then open AI Director. Choose Normal, Heretic or Light and click Load model. Wait for it to load.",
+            "Ask for a specific task using the selected project, such as a shot plan or a clearer character description.",
+            "Review the draft. Saved chats remain attached to the project; use the history selector to reopen them.",
+            "For structured additions, choose Review structured draft and paste elements, scenes and/or shots JSON. Check the content before applying it.",
+            "Export transcript JSON when you want to keep a copy. Choose Unload model before switching to heavy generation."
+          ]
+        },
+        {
+          "title": "Example prompts",
+          "kind": "list",
+          "items": [
+            "Suggest three different five-second actions for this character. Keep the design and location consistent.",
+            "Rewrite this shot prompt with a clear subject, action, framing, lighting and background.",
+            "Review the scene for continuity problems and identify the smallest local test for each."
+          ]
+        },
+        {
+          "title": "Laya and edits",
+          "kind": "paragraph",
+          "items": [
+            "Classify next request with Laya is a local CPU routing experiment. Its answer is advisory. Chat drafts do not silently change designs or execute code; structured additions must pass the project command validation. Normal and Heretic profiles are alternative workers, not simultaneous models."
+          ]
+        },
+        {
+          "title": "Local AI agent and autonomy",
+          "kind": "steps",
+          "items": [
+            "Enable Local AI agent, choose the brain and generation limit, then Save autonomy settings. Settings belong to the selected project. The default is disabled with Ask for approval selected.",
+            "Ask for approval shows the complete plan, then requires approval for each step. Approve routine actions runs the reviewed plan after one approval. Full local autonomy validates and executes a bounded plan without waiting for approval.",
+            "Send a request in the normal message box. The agent loads the selected local model, creates a structured plan and validates it. Laya is optional advisory classification; it cannot grant permissions.",
+            "Review the summary, generation count and exact proposed parameters. Approve plan, Edit plan JSON, Revise request in plain language, or cancel.",
+            "The activity log shows executed steps and errors. Generation runs in a visible portable ComfyUI browser and collects outputs. The chat model unloads for generation; it will reload for the next agent request.",
+            "Pause or Stop waits for the current inference/render operation to finish. Changing permissions cancels an unstarted plan. A changed project revision prevents an old plan from overwriting newer edits.",
+            "Undo project edits restores pre-plan character/scene/shot/timeline records only when no later project changes conflict. Generated media and job evidence remain available."
+          ]
+        },
+        {
+          "title": "Agent capabilities and boundaries",
+          "kind": "paragraph",
+          "items": [
+            "The agent can create/edit world elements, scenes, shots and project direction; change timelines; run installed Krea/reference/H3 presets; render timelines; and transcribe existing assets. It has no shell, downloads, cloud spending/upload permissions, arbitrary workflow execution, asset-approval tool, visual quality judge, or training tool. Blender, mask painting and voice/lip-sync controls remain manual or assistant-operated. Full autonomy is a bounded plan of at most 12 actions and your selected generation budget (0–8); it is not an unlimited self-improvement loop. Invalid model plans get at most one correction attempt before stopping."
+          ]
+        }
+      ],
+      "related": [
+        "ComfyUI-workflows",
+        "Assistant-and-API"
+      ]
+    },
+    {
+      "id": "Models-and-training",
+      "title": "Models, VNCCS and LoRA training",
+      "summary": "Build a reviewed dataset and stage a compatible training experiment.",
+      "tool": "dataset",
+      "sections": [
+        {
+          "title": "Prepare the dataset",
+          "kind": "steps",
+          "items": [
+            "Create the character or object identity, then generate varied reference views with consistent design.",
+            "Review images in Assets. Assign each to the intended element and write an accurate, image-specific caption.",
+            "Separate train and validation images. Put related crops or versions of the same source in the same split.",
+            "Approve the useful images, then open LoRA workshop and select the element.",
+            "Export reviewed dataset. Resolve any duplicate-content, missing-caption or split-leakage errors.",
+            "Prepare SDXL training canvas stages the installed SDXL recipe. Inspect its settings in ComfyUI before running an experiment.",
+            "Evaluate a trained adapter on held-out views and new prompts before using it for production."
+          ]
+        },
+        {
+          "title": "Compatibility and readiness",
+          "kind": "list",
+          "items": [
+            "The installed training recipe targets SDXL. It is not a general trainer for Krea, Qwen or H3.",
+            "No trained character LoRA is supplied just because a dataset or training canvas exists.",
+            "Use Open VNCCS character tools to stage the registered character workflow, then inspect the available nodes and readiness notes.",
+            "Keep model files under Models in the correct family directory. A LoRA must match its base architecture. Record source, version and usage terms with downloaded models.",
+            "Tool catalog distinguishes installed, tested and experimental features."
+          ]
+        }
+      ],
+      "related": [
+        "Assets-and-review",
+        "ComfyUI-workflows"
+      ]
+    },
+    {
+      "id": "Backups-and-export",
+      "title": "Backups and portable exports",
+      "summary": "Protect project work and move a reviewed production between installations.",
+      "tool": "handoff",
+      "sections": [
+        {
+          "title": "Export and import a production",
+          "kind": "steps",
+          "items": [
+            "Review the project’s assets, selected takes, captions and unresolved notes.",
+            "Open Export & handoff → Export local VISION package. Download the ZIP or keep its saved workspace copy.",
+            "The package includes project records, media, workflows, shot instructions, subtitle sidecars and supported advanced files such as saved Blender scenes. Voice profiles and speech metadata travel with it.",
+            "To import, place the ZIP inside the workspace and choose Import a VISION package with its relative path. Import creates an independent project.",
+            "Check references and rebind imported workflow paths before running them. Verify important media and subtitles after import."
+          ]
+        },
+        {
+          "title": "Back up the whole installation",
+          "kind": "paragraph",
+          "items": [
+            "A VISION package is a production handoff, not a copy of every model or tool. For a full portable backup, finish active jobs and stop the studio, then copy the whole project folder to your chosen backup location. Preserve Studio/gimmestudio.sqlite3 together with project files; avoid copying a live database piecemeal. User contains private settings and any configured API credentials, so keep full backups private."
+          ]
+        },
+        {
+          "title": "Recovery",
+          "kind": "list",
+          "items": [
+            "Restore trashed items in Jobs & history.",
+            "If the page reports a stale revision, reload before editing again; another save changed the project.",
+            "After a reconnect, collect completed ComfyUI results from its retained history."
+          ]
+        }
+      ],
+      "related": [
+        "Cloud-handoff",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "id": "Cloud-handoff",
+      "title": "Higgsfield handoff",
+      "summary": "Prepare locally, then explicitly transfer approved assets when ready.",
+      "tool": "sync",
+      "sections": [
+        {
+          "title": "Prepare without uploading",
+          "kind": "steps",
+          "items": [
+            "Finish local review and export a VISION package.",
+            "Open Cloud handoff → Prepare assistant handoff plan. This writes a local manifest of approved assets and project direction.",
+            "Review that plan with the assistant before using supported Higgsfield connector actions for project assembly or a final run."
+          ]
+        },
+        {
+          "title": "Optional API asset upload",
+          "kind": "steps",
+          "items": [
+            "Use Configure API credentials only if you have your own Higgsfield developer account. Enter the key ID and secret locally; do not paste them into a public issue or wiki.",
+            "Approve the assets in Asset library, then select them in Cloud handoff.",
+            "Choose Upload selected assets to Higgsfield. This explicitly sends those files outside the computer.",
+            "Successful uploads save receipts and public input URLs. Matching content hashes are skipped on repeat uploads; use the refresh option if provider-managed URLs expire."
+          ]
+        },
+        {
+          "title": "What is and is not synchronized",
+          "kind": "paragraph",
+          "items": [
+            "The adapter uploads media inputs. It does not create a native Cinema Studio project, synchronize a timeline or submit paid generation. Account-backed upload has not yet been verified with this installation’s user credentials. Native project synchronization remains pending. A final Higgsfield generation is a new take that needs review, not a deterministic replay of a ComfyUI graph."
+          ]
+        }
+      ],
+      "related": [
+        "Backups-and-export",
+        "Assets-and-review"
+      ]
+    },
+    {
+      "id": "Troubleshooting",
+      "title": "Troubleshooting and known limits",
+      "summary": "Recover from common setup, model and workflow problems.",
+      "tool": "jobs",
+      "sections": [
+        {
+          "title": "The dashboard will not open",
+          "kind": "list",
+          "items": [
+            "Run GimmeStudio.cmd from this installation. Check Logs/harness.err.log if port 8190 does not become available.",
+            "Do not launch an unrelated installed application to repair this portable setup. Use its own tools and launchers."
+          ]
+        },
+        {
+          "title": "A model will not start or memory is full",
+          "kind": "list",
+          "items": [
+            "Check Jobs & history and the service indicator. Finish the current queue before switching workers.",
+            "Unload AI Director before starting ComfyUI. Unload ComfyUI before loading a large chat model.",
+            "Reduce image dimensions or use the measured draft preset. Avoid several heavy workers at once."
+          ]
+        },
+        {
+          "title": "The workflow did not appear or results are missing",
+          "kind": "list",
+          "items": [
+            "Click Load studio shot inside ComfyUI; staging alone does not run it.",
+            "Check for missing models or custom nodes before clicking Run.",
+            "Wait for completion, then Collect completed takes. Only project-tagged workflows are automatically matched to this production.",
+            "Reload the project after background work. Jobs & history shows errors and worker logs."
+          ]
+        },
+        {
+          "title": "The output looks wrong",
+          "kind": "list",
+          "items": [
+            "A seed does not guarantee identity. Compare references, prompt changes and denoise settings.",
+            "For masks, inspect brush coverage and feathering; the model may alter geometry within the edited area.",
+            "For lip-sync, use a clear frontal face and a tightly selected forehead-to-chin rectangle. Cartoon results remain experimental.",
+            "Read Tool catalog before assuming support: masked video replacement, automatic moving-face tracking, dedicated music generation and native whole-project cloud synchronization are not installed capabilities."
+          ]
+        },
+        {
+          "title": "Report a useful issue",
+          "kind": "list",
+          "items": [
+            "Include the page, steps to reproduce, exact error and relevant worker log excerpt.",
+            "Include model/workflow names and dimensions, and whether another worker was running.",
+            "Do not share API credentials, the User directory, private chats or a whole project database in a public report."
+          ]
+        }
+      ],
+      "related": [
+        "ComfyUI-workflows",
+        "Backups-and-export"
+      ]
+    },
+    {
+      "id": "Assistant-and-API",
+      "title": "Assistant and API reference",
+      "summary": "Use the same revisioned commands as the dashboard.",
+      "tool": "ai",
+      "sections": [
+        {
+          "title": "Read the current state",
+          "kind": "code",
+          "items": [
+            "ComfyUI_windows_portable/python_embeded/python.exe Harness/studio_cli.py list\nComfyUI_windows_portable/python_embeded/python.exe Harness/studio_cli.py get PROJECT_ID\nComfyUI_windows_portable/python_embeded/python.exe Harness/studio_cli.py services"
+          ]
+        },
+        {
+          "title": "Apply a reviewed command",
+          "kind": "code",
+          "items": [
+            "{\n  \"action\": \"put\",\n  \"project\": \"PROJECT_ID\",\n  \"revision\": 1,\n  \"kind\": \"elements\",\n  \"value\": {\"name\": \"Iris\", \"kind\": \"character\", \"description\": \"A friendly robot\", \"references\": []}\n}"
+          ]
+        },
+        {
+          "title": "Command rules",
+          "kind": "list",
+          "items": [
+            "Save the JSON to a workspace file and pass it to Harness/studio_cli.py command command.json, or use - for JSON stdin. Replace PROJECT_ID and revision with the current values.",
+            "GET /api/studio lists operation names; GET /api/studio/project/ID reads a project; GET /api/studio/history/ID reads revision summaries.",
+            "POST /api/studio/command is the shared mutation surface. Existing-project changes require project and current revision. Stale edits are rejected.",
+            "Image generation is staged for visible frontend execution by default. Do not bypass review by silently approving generated outputs.",
+            "Harness/studio_api.py validates ordinary commands. advanced_studio.py, masked_edit.py and cloud_handoff.py validate their tool-specific fields."
+          ]
+        },
+        {
+          "title": "Advanced actions",
+          "kind": "list",
+          "items": [
+            "masked-edit: image asset ID, PNG mask data URL, prompt, seed and feather pixels.",
+            "advanced/scene-save, advanced/blender-render, advanced/blender-open, advanced/blender-rerender and advanced/blender-launch control local 3D work.",
+            "advanced/voice-save, advanced/speak and advanced/lipsync control saved voices and portrait speech.",
+            "cloud/plan is local-only. cloud/upload requires approved asset IDs and explicit confirm_upload=true."
+          ]
+        },
+        {
+          "title": "Agent control API",
+          "kind": "list",
+          "items": [
+            "GET /api/agent/state/PROJECT_ID returns settings, current plan and activity; private undo snapshots are omitted.",
+            "POST /api/agent/settings takes project and settings: enabled, mode (ask/routine/full), model (normal/heretic/light), max_generations (0–8), use_laya.",
+            "POST /api/agent/plan takes project and prompt. POST /api/agent/approve takes project and the displayed run ID. Additional controls: pause, cancel, edit (unstarted plan), undo.",
+            "Agent operations are stored under Projects/ID/agent. A restart marks unfinished agent work failed instead of automatically replaying it. Inspect Jobs before retrying."
+          ]
+        }
+      ],
+      "related": [
+        "AI-Director",
+        "ComfyUI-workflows"
+      ]
+    }
+  ]
+}

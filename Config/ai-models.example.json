@@ -1,0 +1,24 @@
+[
+  {
+    "id": "normal",
+    "name": "Qwen3.6 27B \u00b7 Normal",
+    "repo": "unsloth/Qwen3.6-27B-GGUF",
+    "revision": "82d411acf4a06cfb8d9b073a5211bf410bfc29bf",
+    "filename": "Qwen3.6-27B-Q4_K_M.gguf",
+    "size": 16817244384,
+    "sha256": "5ed60d0af4650a854b1755bd392f9aef4872643dc25a254bc68043fa638392a0",
+    "file": "Models/llm/Qwen3.6-27B-Q4_K_M.gguf",
+    "verified": false
+  },
+  {
+    "id": "heretic",
+    "name": "Qwen3.6 27B \u00b7 Heretic v2",
+    "repo": "llmfan46/Qwen3.6-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF",
+    "revision": "a6b6a6d9385fe7850644e56bfdc93a04a6cb2ee8",
+    "filename": "Qwen3.6-27B-uncensored-heretic-v2-Native-MTP-Preserved-Q4_K_M.gguf",
+    "size": 17211797600,
+    "sha256": "c07c48d259126eb613df7618c4c073d5cb86c7946723a73d73d83ebd8f70033e",
+    "file": "Models/llm/Qwen3.6-27B-uncensored-heretic-v2-Native-MTP-Preserved-Q4_K_M.gguf",
+    "verified": false
+  }
+]

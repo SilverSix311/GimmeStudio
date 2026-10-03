@@ -1,0 +1,17 @@
+/Models/
+/Tools/
+/Downloads/
+/Cache/
+/Logs/
+/User/
+/Projects/
+/Input/
+/Output/
+/Publishing/
+/Studio/
+/Workflows/
+/Harness/staged-workflow.json
+__pycache__/
+*.pyc
+.env*
+/ComfyUI_windows_portable/

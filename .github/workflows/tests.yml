@@ -1,0 +1,13 @@
+name: Source tests
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r Config/requirements.txt
+      - run: python Harness/initialize_portable.py
+      - run: python -m unittest discover -s Harness -p "test_*.py"

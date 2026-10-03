@@ -1,0 +1,14 @@
+let handbook;
+async function helpPage(){
+ const host=$('#content');host.innerHTML='<p>Loading the local handbook…</p>';
+ try{handbook=handbook||await api('/help.json');}catch(e){if(current==='help')host.textContent='Could not load Help: '+e.message;return;}
+ if(current!=='help')return;
+ const requested=location.hash.split('/')[1]||'Start-here';
+ const article=handbook.pages.find(p=>p.id===requested);
+ host.innerHTML=`<div class="help-top"><div><span class="eyebrow">LEARN YOUR LOCAL STUDIO</span><h2>${esc(handbook.title)}</h2><p>From a first character design to a reviewed film. Updated ${esc(handbook.updated)}.</p></div><a class="help-download" href="/help-download">Download GitHub Wiki pages ↓</a></div><div class="help-layout"><div class="panel help-index"><label class="field">Search the handbook<input id="help-search" type="search" placeholder="Try subtitles, Blender, memory…"></label><nav id="help-results" aria-label="Help topics"></nav><p class="muted" id="help-count"></p></div><article id="help-article" class="panel help-article"></article></div>`;
+ const list=query=>{const words=query.toLowerCase().split(/\s+/).filter(Boolean);const matches=handbook.pages.filter(p=>words.every(w=>JSON.stringify(p).toLowerCase().includes(w)));$('#help-results').innerHTML=matches.map(p=>`<a href="#help/${p.id}" ${p.id===requested?'aria-current="page"':''}><strong>${esc(p.title)}</strong><small>${esc(p.summary)}</small></a>`).join('')||'<p>No guides match. Try a shorter phrase.</p>';$('#help-count').textContent=`${matches.length} of ${handbook.pages.length} guides`;};list('');$('#help-search').oninput=e=>list(e.target.value);
+ if(!article){$('#help-article').innerHTML='<h2>Guide not found</h2><p><a href="#help/Start-here">Return to Start here</a></p>';return;}
+ const blocks=article.sections.map((s,i)=>`<section id="help-section-${i}"><h3>${esc(s.title)}</h3>${s.kind==='code'?`<pre><code>${esc(s.items.join('\n'))}</code></pre>`:s.kind==='steps'||s.kind==='list'?`<${s.kind==='steps'?'ol':'ul'}>${s.items.map(x=>`<li>${esc(x)}</li>`).join('')}</${s.kind==='steps'?'ol':'ul'}>`:s.items.map(x=>`<p>${esc(x)}</p>`).join('')}</section>`).join('');
+ $('#help-article').innerHTML=`<div class="eyebrow">GUIDE ${handbook.pages.indexOf(article)+1} / ${handbook.pages.length}</div><h2>${esc(article.title)}</h2><p class="help-summary">${esc(article.summary)}</p><div class="toolbar"><a class="help-open" href="#${esc(article.tool)}">Open this tool →</a><button id="help-print">Print this guide</button><button id="help-copy">Copy guide link</button></div>${blocks}<footer><h3>Continue learning</h3>${article.related.map(id=>{const p=handbook.pages.find(p=>p.id===id);return `<a class="help-related" href="#help/${id}">${esc(p.title)} →</a>`;}).join('')}</footer>`;
+ bind('#help-print',()=>window.print());bind('#help-copy',async()=>{await navigator.clipboard.writeText(location.origin+location.pathname+'#help/'+article.id);notice('Guide link copied');});
+}
