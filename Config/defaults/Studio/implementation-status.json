@@ -29,6 +29,31 @@
       "status": "Additional setup required",
       "detail": "Adapters exist but their specialized dependencies and models are not provisioned by core setup.",
       "page": "help"
+    },
+    {
+      "name": "Visual LoRA library",
+      "status": "Optional extension; installed locally",
+      "detail": "Pinned LoRA Manager, workspace-local metadata and sidecars, shared SFW weights. Fresh installs use Harness/install_lora_manager.py.",
+      "page": "loras"
+    },
+    {
+      "name": "Shot LoRAs and keyframes",
+      "status": "Available",
+      "detail": "Ordered model-only LoRA stacks, explicit family checks, strengths, first and last frame references; native canvas and API graphs remain synchronized.",
+      "page": "cinema"
+    },
+    {
+      "name": "Anima and 360 orbit recipes",
+      "status": "Locally rendered; models required on fresh installs",
+      "detail": "Anima Turbo 512-square test and H3 768-square / 73-frame silent orbit completed. Orbit replaces turbo with its own 28-step recipe; new subjects require visual review.",
+      "page": "cinema"
+    },
+    {
+      "name": "Timeline source monitor",
+      "status": "Browser verified",
+      "detail": "Assembly scrubber and clip navigation alongside trimming and ordering. Render local preview applies transitions, grading and layered audio; these are not simulated live.",
+      "page": "timeline"
     }
-  ]
+  ],
+  "date": "2026-10-03"
 }
