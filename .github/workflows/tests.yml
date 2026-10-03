@@ -2,7 +2,11 @@ name: Source tests
 on: [push, pull_request, workflow_dispatch]
 jobs:
   tests:
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -11,3 +15,29 @@ jobs:
       - run: python -m pip install -r Config/requirements.txt
       - run: python Harness/initialize_portable.py
       - run: python -m unittest discover -s Harness -p "test_*.py"
+  portable-install:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install using project-managed Python
+        run: bash Setup-GimmeStudio.sh --core-only
+      - name: Check setup rerun and portable browser
+        shell: bash
+        run: |
+          bash Setup-GimmeStudio.sh --core-only
+          export STUDIO_ROOT="$PWD"
+          source Environment.sh
+          Tools/runtime/bin/python -m unittest discover -s Harness -p 'test_*.py'
+          bash GimmeStudio.sh --no-browser
+          Tools/runtime/bin/python Harness/smoke_portable.py
+          bash GimmeStudio.sh --stop
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: portable-${{ matrix.os }}
+          path: Logs/

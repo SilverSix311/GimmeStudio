@@ -1,3 +1,4 @@
+import runtime_paths
 """Isolated, project-scoped 3D, speech and lip-sync jobs."""
 import base64,json,math,os,re,subprocess,threading,time
 from pathlib import Path
@@ -6,8 +7,8 @@ import production
 
 ROOT=store.ROOT
 LOCK=threading.Lock()
-PYTHON=ROOT/'ComfyUI_windows_portable/python_embeded/python.exe'
-BLENDER=ROOT/'Tools/blender-4.5.14-windows-x64/blender.exe'
+PYTHON=runtime_paths.path('python', ROOT)
+BLENDER=runtime_paths.path('blender', ROOT)
 
 
 def vector(value,limit=1000,positive=False):
@@ -24,7 +25,7 @@ def color(value):
 def scene_valid(value):
  if not isinstance(value,dict) or not str(value.get('name','')).strip():raise ValueError('Name the 3D scene')
  value=json.loads(json.dumps(value))
- if len(value.get('objects',[]))>100 or not 1<=len(value.get('lights',[]))<=8:raise ValueError('Use at most 100 objects and 1–8 lights')
+ if len(value.get('objects',[]))>100 or not 1<=len(value.get('lights',[]))<=8:raise ValueError('Use at most 100 objects and 1â€“8 lights')
  ids=set()
  for obj in value['objects']:
   if obj['type'] not in ('cube','sphere','cylinder','cone','plane') or not re.fullmatch('[a-f0-9-]{12,40}',obj['id']) or obj['id'] in ids:raise ValueError('Invalid object')
@@ -88,7 +89,7 @@ def dispatch(p,data):
   return dict(project=store.mutate(p['id'],data['revision'],'voice-save',save),message='Reusable voice profile saved')
  if action=='blender-open':
   job=api.item(p,'jobs',data['job']);file=production.local_file(job['result']['blend'])
-  if file.suffix!='.blend' or not file.is_relative_to((ROOT/'Projects'/p['id']).resolve()):raise ValueError('Choose this project’s Blender scene')
+  if file.suffix!='.blend' or not file.is_relative_to((ROOT/'Projects'/p['id']).resolve()):raise ValueError('Choose this projectâ€™s Blender scene')
   subprocess.Popen([str(BLENDER),'--disable-autoexec',str(file)],cwd=ROOT,env=env(),creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
   return dict(project=p,message='Opened in the bundled portable Blender')
  if action not in ('blender-render','blender-rerender','speak','lipsync'):raise ValueError('Unknown advanced action')
@@ -109,7 +110,7 @@ def dispatch(p,data):
   elif action=='speak':
    voice=next((v for v in p.get('voices',[]) if v['id']==data['voice']),None)
    text=str(data.get('text','')).strip()
-   if not voice or not 1<=len(text)<=2000:raise ValueError('Choose a voice and enter 1–2000 characters')
+   if not voice or not 1<=len(text)<=2000:raise ValueError('Choose a voice and enter 1â€“2000 characters')
    payload=dict(voice=voice,text=text)
   else:
    image=api.item(p,'assets',data['image']);audio=api.item(p,'assets',data['audio'])
@@ -133,7 +134,7 @@ def dispatch(p,data):
     args=[str(BLENDER),'--background','--factory-startup','--disable-autoexec','--python',str(ROOT/'Harness/blender_scene.py'),'--',str(folder/'input.json')]
    else:args=[str(PYTHON),str(ROOT/'Harness/media_worker.py'),action,str(folder/'input.json')]
    result=run_process(args,folder)
-   source=Path(result['file']);asset=api.asset_record(p,source,('3D render · '+payload['name']) if action.startswith('blender-') else 'Voice take' if action=='speak' else 'Lip-sync take',dict(job=key,adapter=action,input=production.relative(folder/'input.json')))
+   source=Path(result['file']);asset=api.asset_record(p,source,('3D render Â· '+payload['name']) if action.startswith('blender-') else 'Voice take' if action=='speak' else 'Lip-sync take',dict(job=key,adapter=action,input=production.relative(folder/'input.json')))
    result['file']=asset['file']
    if result.get('blend'):result['blend']=production.relative(Path(result['blend']))
    def finish(doc):

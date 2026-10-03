@@ -2,13 +2,15 @@
 
 A local production studio for project planning, character design, image/video workflows, 3D blockouts, voice drafts, timeline editing and reviewed cloud handoff.
 
-## Install on Windows
+## Install on Windows, Linux or macOS
 
 Download and extract the repository ZIP, then double-click **Setup-GimmeStudio.cmd**. After setup, run **GimmeStudio.cmd**. No administrator privileges or preinstalled Python, Git, Node, LM Studio or Blender are required. All application files stay in the extracted folder.
 
 The installer provisions the pinned NVIDIA ComfyUI portable runtime, dashboard dependencies and Chromium. Models and specialized adapters are separate. Optional portable llama.cpp and Blender: `Setup-GimmeStudio.ps1 -WithLocalAI -WithBlender`.
 
-See [installation, model setup and backup instructions](Docs/INSTALL.md). Windows x64 and a compatible NVIDIA GPU/driver are the supported generation target. This is an early portable release, not a claim of complete Higgsfield parity.
+On Linux or macOS, run `bash Setup-GimmeStudio.sh --core-only`, then `bash GimmeStudio.sh`. This installs a project-managed Python and browser without using an installed Python. Omit `--core-only` to install ComfyUI too; choose `--backend cpu`, `--backend cuda` (Linux NVIDIA), or `--backend mps` (Apple Silicon). Model and GPU workflows require platform-specific validation.
+
+See [installation, model setup and backup instructions](Docs/INSTALL.md). Windows NVIDIA generation is locally tested; Linux/macOS core setup is tested in CI. GPU generation support depends on the selected model and nodes. This is an early portable release, not a claim of complete Higgsfield parity.
 
 ## Start the existing portable installation
 

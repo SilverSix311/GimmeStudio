@@ -1,3 +1,4 @@
+import runtime_paths
 """Bounded local agent: model proposes JSON; host enforces scope, budgets and approval."""
 import copy,json,re,threading,time,subprocess
 from pathlib import Path
@@ -34,7 +35,7 @@ def resolve(value,refs):
 def validate(plan,p,settings):
  if not isinstance(plan,dict) or set(plan)-{'summary','steps'} or not isinstance(plan.get('summary'),str) or not 1<=len(plan['summary'])<=2000:raise ValueError('Plan needs a short summary and steps')
  steps=plan.get('steps');sim=copy.deepcopy(p);refs={};generations=0
- if not isinstance(steps,list) or not 1<=len(steps)<=12:raise ValueError('Use 1–12 bounded steps')
+ if not isinstance(steps,list) or not 1<=len(steps)<=12:raise ValueError('Use 1â€“12 bounded steps')
  for i,step in enumerate(steps,1):
   if not isinstance(step,dict) or set(step)!={'description','action','data'} or not isinstance(step['description'],str) or not 1<=len(step['description'])<=500:raise ValueError('Each step needs description, action and data')
   action=step['action'];data=step['data']
@@ -143,7 +144,7 @@ def execute(key,automatic=False):
   if action=='stage':
    job=updated['jobs'][-1];folder=ROOT/'Projects'/key/'agent'/run['id'];folder.mkdir(parents=True,exist_ok=True)
    with (folder/'canvas.log').open('a',encoding='utf-8') as log_file:
-    worker=subprocess.run([str(ROOT/'ComfyUI_windows_portable/python_embeded/python.exe'),str(ROOT/'Harness/agent_canvas.py'),key,job['id']],cwd=ROOT,stdout=log_file,stderr=subprocess.STDOUT,timeout=1800,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+    worker=subprocess.run([str(runtime_paths.path('python', ROOT)),str(ROOT/'Harness/agent_canvas.py'),key,job['id']],cwd=ROOT,stdout=log_file,stderr=subprocess.STDOUT,timeout=1800,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
    if worker.returncode:raise ValueError('Visible generation failed; inspect agent canvas log and Jobs before retrying')
    updated=api.collect(store.get(key))
   elif action in ('render','transcribe'):

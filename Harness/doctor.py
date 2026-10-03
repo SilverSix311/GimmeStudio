@@ -1,4 +1,5 @@
 """Offline checks; never downloads or starts model workers."""
+import runtime_paths
 import importlib.util
 import json
 import sys
@@ -9,13 +10,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def check(root=ROOT):
     required = ['Harness/studio.html', 'Harness/server.py', 'Docs/help.json',
-                'ComfyUI_windows_portable/python_embeded/python.exe', 'ComfyUI_windows_portable/ComfyUI/main.py']
+                str(runtime_paths.path('python', root).relative_to(root))]
+    if not runtime_paths.settings(root).get('core_only', False):
+        required.append(str((runtime_paths.path('comfy', root) / 'main.py').relative_to(root)))
     missing = [p for p in required if not (root / p).is_file()]
     missing += ['Python package: ' + name for name in ('psutil', 'PIL', 'playwright', 'imageio_ffmpeg')
                 if importlib.util.find_spec(name) is None]
     optional = {name: (root / path).exists() for name, path in {
-        'Local AI runtime': 'Tools/llama/llama-server.exe',
-        'Blender': 'Tools/blender-4.5.14-windows-x64/blender.exe',
+        'Local AI runtime': runtime_paths.path('llama', root),
+        'Blender': runtime_paths.path('blender', root),
         'Portable browser': 'Tools/browsers',
     }.items()}
     result = dict(ok=not missing, missing=missing, optional=optional,

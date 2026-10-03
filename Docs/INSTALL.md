@@ -38,3 +38,35 @@ Run the local diagnostic without starting GPU workers:
 Ports: dashboard 8190, ComfyUI 8188, local planner 8189. Keep these loopback services private. On failure inspect `Logs`. `-SkipBrowser` is intended for automated install testing and does not install the normal launcher browser.
 
 Upstream packaging: [ComfyUI portable documentation](https://docs.comfy.org/installation/comfyui_portable_windows). Third-party tools and model weights retain their own licenses.
+
+
+## Linux and macOS
+
+Use a writable local directory, then:
+
+```bash
+bash Setup-GimmeStudio.sh --core-only
+bash GimmeStudio.sh
+# Stop idle studio services:
+bash GimmeStudio.sh --stop
+```
+
+The core installer downloads SHA-256-verified uv, manages its own Python 3.13.7 and virtual environment under Tools, and installs Chromium under Tools/browsers. It does not use installed Python, LM Studio or Blender and does not edit shell profiles. Bash, curl, tar and platform checksum utilities are host prerequisites. Linux Chromium may additionally require distribution-provided shared libraries; setup does not use sudo or install system packages. Consult the browser error if a minimal Linux image lacks these libraries.
+
+Supported bootstrap targets: Linux x86_64/aarch64 and macOS Intel/Apple Silicon. Automated core installation/browser tests run on Ubuntu x64 and the current GitHub macOS runner. Other architectures and all GPU rendering paths require further hardware validation. Linux ARM may need its own FFmpeg build for media exports.
+
+To also provision ComfyUI, omit `--core-only`:
+
+```bash
+bash Setup-GimmeStudio.sh --backend cpu     # Linux/Intel Mac default
+bash Setup-GimmeStudio.sh --backend cuda    # Linux NVIDIA, CUDA 13 driver required
+bash Setup-GimmeStudio.sh --backend mps     # Apple Silicon Mac
+```
+
+These install pinned ComfyUI source and PyTorch. CPU generation is slow. CUDA-only quantization, custom kernels and nodes may not work with MPS/CPU; Windows Krea/H3 presets are not certified for every backend. On unsupported model kernels, use a compatible model/workflow. No automatic model downloads or cloud fallback occur.
+
+Optional local AI and Blender can use platform-native portable distributions extracted under Tools. Set project-relative `llama` or `blender` paths in `Studio/runtime.json` if needed. Defaults: `Tools/llama/llama-server`, Linux `Tools/blender/blender`, Mac `Tools/blender/Blender.app/Contents/MacOS/Blender`. Mac apps may require the normal macOS first-open approval. This installer does not yet provision these optional Unix binaries, Laya, voice or training packages. Runtime paths outside the project are rejected.
+
+Do not copy Windows executables to Linux/Mac. Transfer project data and compatible models, then run setup on the destination OS. Stop services before moving a folder. Unix environments may need rebuilding after relocation: preserve data, rename `Tools/runtime` and run setup again. Port 8190 must be free or owned by this studio. `--no-browser` starts the dashboard without opening Chromium.
+
+Implementation references: [uv managed Python](https://docs.astral.sh/uv/guides/install-python/) and [uv local storage settings](https://docs.astral.sh/uv/reference/storage/).

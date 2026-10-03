@@ -1,3 +1,4 @@
+import runtime_paths
 """Control only the ComfyUI process owned by this portable studio."""
 import json
 import subprocess
@@ -15,10 +16,10 @@ def owned_process():
         return None
     try:
         process = psutil.Process(int(pidfile.read_text().strip()))
-        expected = (ROOT / 'ComfyUI_windows_portable/python_embeded/python.exe').resolve()
-        main = (ROOT / 'ComfyUI_windows_portable/ComfyUI/main.py').resolve()
+        expected = (runtime_paths.path('python', ROOT)).resolve()
+        main = (runtime_paths.path('comfy', ROOT) / 'main.py').resolve()
         if Path(process.exe()).resolve() != expected or not any(Path(a).resolve() == main for a in process.cmdline()[1:] if a.endswith('main.py')):
-            raise ValueError('Tracked PID is not this studio’s ComfyUI server')
+            raise ValueError('Tracked PID is not this studioâ€™s ComfyUI server')
         return process
     except psutil.NoSuchProcess:
         return None
@@ -32,7 +33,7 @@ def status():
         with urllib.request.urlopen('http://127.0.0.1:8188/queue', timeout=1) as response:
             queue = json.load(response)
         busy = bool(queue.get('queue_running') or queue.get('queue_pending'))
-        return {'running': True, 'busy': busy, 'message': 'ComfyUI rendering / queued' if busy else 'ComfyUI running · idle'}
+        return {'running': True, 'busy': busy, 'message': 'ComfyUI rendering / queued' if busy else 'ComfyUI running Â· idle'}
     except Exception as e:
         return {'running': True, 'busy': True, 'message': 'ComfyUI unavailable: ' + str(e)}
 
@@ -56,12 +57,13 @@ def stop(_data):
 
 def start(_data):
     if owned_process() is None:
-        command = [str(ROOT / 'ComfyUI_windows_portable/python_embeded/python.exe'), '-s',
-                   str(ROOT / 'ComfyUI_windows_portable/ComfyUI/main.py'), '--listen', '127.0.0.1',
+        command = [str(runtime_paths.path('python', ROOT)), '-s',
+                   str(runtime_paths.path('comfy', ROOT) / 'main.py'), '--listen', '127.0.0.1',
                    '--port', '8188', '--disable-auto-launch', '--disable-api-nodes', '--reserve-vram', '2']
         for option, folder in [('models', 'Models'), ('output', 'Output'), ('input', 'Input'),
                                ('user', 'User'), ('temp', 'Cache/temp')]:
             command += ['--' + option + '-directory', str(ROOT / folder)]
+        command += runtime_paths.comfy_args(ROOT)
         # Inherit the dashboard's workspace-scoped caches, and detach console/log handles.
         with (ROOT / 'Logs/comfy.out.log').open('w') as out, (ROOT / 'Logs/comfy.err.log').open('w') as err:
             process = subprocess.Popen(command, cwd=ROOT, stdin=subprocess.DEVNULL, stdout=out, stderr=err,

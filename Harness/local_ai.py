@@ -1,3 +1,4 @@
+import runtime_paths
 """Portable local chat, owned llama.cpp lifecycle, and experimental CPU decisions."""
 import json
 import re
@@ -34,7 +35,7 @@ def request(path, data=None, timeout=3):
 def models():
     manifest = ROOT / 'Studio/ai-models.json'
     result = json.loads(manifest.read_text()) if manifest.exists() else []
-    result += [dict(id='light', name='Qwen3 8B · Lightweight', file='Models/llm/Qwen3-8B-Q4_K_M.gguf', verified=True)]
+    result += [dict(id='light', name='Qwen3 8B Â· Lightweight', file='Models/llm/Qwen3-8B-Q4_K_M.gguf', verified=True)]
     for item in result:
         path = ROOT / item['file']
         partial = path.with_suffix(path.suffix + '.partial')
@@ -49,7 +50,7 @@ def owned_process():
         return None
     try:
         process = psutil.Process(int(path.read_text().strip()))
-        if Path(process.exe()).resolve() != (ROOT / 'Tools/llama/llama-server.exe').resolve():
+        if Path(process.exe()).resolve() != (runtime_paths.path('llama', ROOT)).resolve():
             raise ValueError('Tracked process is not the bundled model server')
         args = process.cmdline()
         if '-m' not in args or not Path(args[args.index('-m') + 1]).resolve().is_relative_to((ROOT / 'Models').resolve()):
@@ -84,8 +85,8 @@ def start(data):
     if comfy_service.status()['running']:
         raise ValueError('Shut down idle ComfyUI using its dashboard button before loading a chat model.')
     stop()
-    command = [str(ROOT / 'Tools/llama/llama-server.exe'), '-m', str(ROOT / selected['file']),
-               '--host', '127.0.0.1', '--port', '8189', '-ngl', '99', '-c', '8192',
+    command = [str(runtime_paths.path('llama', ROOT)), '-m', str(ROOT / selected['file']),
+               '--host', '127.0.0.1', '--port', '8189', '-ngl', '0' if runtime_paths.backend(ROOT) == 'cpu' else '99', '-c', '8192',
                '--parallel', '1', '--jinja', '--no-webui', '--slots', '--alias', selected['id']]
     with (ROOT / 'Logs/planner.out.log').open('w') as out, (ROOT / 'Logs/planner.err.log').open('w') as err:
         process = subprocess.Popen(command, cwd=ROOT, stdin=subprocess.DEVNULL, stdout=out, stderr=err,
@@ -126,7 +127,7 @@ def project_context(key):
 def chat(data):
     prompt = str(data.get('prompt', '')).strip()
     if not prompt or len(prompt) > 10000:
-        raise ValueError('Enter a prompt of 1–10,000 characters')
+        raise ValueError('Enter a prompt of 1â€“10,000 characters')
     if owned_process() is None:
         raise ValueError('Load the portable model server first')
     loaded = request('/v1/models')['data'][0]['id']
@@ -178,7 +179,7 @@ def decision(data):
         raise ValueError('Laya takes a short request, up to 1,200 characters')
     source = ROOT / 'Studio/decision-input.json'
     write(source, {'text': text})
-    result = subprocess.run([str(ROOT / 'ComfyUI_windows_portable/python_embeded/python.exe'), '-s',
+    result = subprocess.run([str(runtime_paths.path('python', ROOT)), '-s',
                              str(ROOT / 'Harness/laya_decision.py'), str(source)], cwd=ROOT,
                             capture_output=True, text=True, timeout=180,
                             creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
@@ -223,7 +224,7 @@ def dispatch(action, data):
                 stop()
             else:
                 {'start': start, 'chat': chat, 'decision': decision}[action](data)
-            JOB['message'] = {'start': 'Model loaded', 'stop': 'Model unloaded · GPU memory released', 'chat': 'Draft saved locally', 'decision': 'Experimental decision saved'}[action]
+            JOB['message'] = {'start': 'Model loaded', 'stop': 'Model unloaded Â· GPU memory released', 'chat': 'Draft saved locally', 'decision': 'Experimental decision saved'}[action]
         except Exception as e:
             JOB.update(error=str(e), message='Local AI action failed')
         finally:
