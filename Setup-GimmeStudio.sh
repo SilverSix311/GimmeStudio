@@ -3,6 +3,14 @@ set -euo pipefail
 STUDIO_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 export STUDIO_ROOT
 source "$STUDIO_ROOT/Environment.sh"
+for name in harness planner comfy; do
+ if [[ -f "$STUDIO_ROOT/Logs/$name.pid" ]]; then
+  read -r tracked < "$STUDIO_ROOT/Logs/$name.pid" || true
+  if [[ "$tracked" =~ ^[0-9]+$ ]] && kill -0 "$tracked" 2>/dev/null; then
+   echo 'Stop this studio and its workers before running setup.' >&2; exit 1
+  fi
+ fi
+done
 mkdir -p "$STUDIO_ROOT/Downloads" "$STUDIO_ROOT/Tools/uv"
 key="$(uname -s)-$(uname -m)"
 row="$(awk -v key="$key" '$1==key {print $2 " " $3}' "$STUDIO_ROOT/Config/uv-downloads.txt")"

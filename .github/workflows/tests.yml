@@ -41,3 +41,24 @@ jobs:
         with:
           name: portable-${{ matrix.os }}
           path: Logs/
+  comfy-runtime:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash Setup-GimmeStudio.sh --backend cpu --skip-browser
+      - name: Boot ComfyUI without model weights
+        shell: bash
+        run: |
+          export STUDIO_ROOT="$PWD"
+          source Environment.sh
+          Tools/runtime/bin/python -c "import sys; sys.path.insert(0,'Harness'); import comfy_service; print(comfy_service.start({})); print(comfy_service.stop({}))"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: comfy-${{ matrix.os }}
+          path: Logs/
