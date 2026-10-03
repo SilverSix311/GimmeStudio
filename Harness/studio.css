@@ -8,3 +8,5 @@
 @media print{body:has(.help-article){background:white;color:black}body:has(.help-article)>aside,body:has(.help-article) main>header,body:has(.help-article) #notice,.help-index,.help-top,.help-article .toolbar{display:none!important}body:has(.help-article) main{margin:0;padding:0}.help-layout{display:block}.help-article{border:0;background:white;color:black}.help-article h3{color:black}.help-article a{color:black}}
 
 .agent-settings label{display:flex;flex-direction:column;gap:6px}.agent-settings label:has(input[type=checkbox]){flex-direction:row;align-items:center}.agent-settings input[type=checkbox]{width:18px;height:18px;flex:none}.agent-settings input[type=number]{width:120px}#agent-run .row strong{overflow-wrap:anywhere}
+
+.incognito-banner{border:1px solid #ad6fce;background:#251032;padding:12px 16px;border-radius:10px;color:#edd9ff}.incognito #workspace-toggle{border-color:#dc91ff;color:#edd9ff}

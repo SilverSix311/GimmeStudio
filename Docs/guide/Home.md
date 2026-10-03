@@ -19,5 +19,6 @@ Start with [Start here: your first film](Start-here.md).
 - [Higgsfield handoff](Cloud-handoff.md) — Prepare locally, then explicitly transfer approved assets when ready.
 - [Troubleshooting and known limits](Troubleshooting.md) — Recover from common setup, model and workflow problems.
 - [Assistant and API reference](Assistant-and-API.md) — Use the same revisioned commands as the dashboard.
+- [Incognito and SFW workspaces](Incognito-workspace.md) — Keep private/NSFW productions separate while reusing model weights.
 
-Updated 2026-10-02. These guides describe the current local implementation.
+Updated 2026-10-03. These guides describe the current local implementation.

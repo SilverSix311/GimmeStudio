@@ -255,6 +255,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             path=self.path.split('?')[0]
+            if path=='/api/workspace':
+                import workspaces
+                return self.send(workspaces.state())
             if path=='/help.json': return self.send((ROOT/'Docs/help.json').read_bytes())
             if path=='/help-download': return self.send((ROOT/'Studio/help/GimmeStudio-wiki.zip').read_bytes(),kind='application/zip')
             if path.startswith('/api/agent/state/'):
@@ -262,8 +265,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(local_agent.public(path.rsplit('/',1)[1]))
             if path=='/api/studio': return self.send(studio_api.status())
             if path=='/api/studio/services':
-                import advanced_studio
-                return self.send({'comfy':production.comfy_service.status(), 'production':dict(production.JOB),
+                import advanced_studio, local_agent
+                return self.send({'planner_running': bool(local_ai.owned_process()), 'agent_busy':local_agent.busy(), 'comfy':production.comfy_service.status(), 'production':dict(production.JOB),
                                   'ai':dict(local_ai.JOB), 'studio_finishing':studio_api.WORK.locked(), 'advanced_busy':advanced_studio.LOCK.locked()})
             if path.startswith('/api/studio/project/'): return self.send(studio_store.get(path.rsplit('/',1)[1]))
             if path.startswith('/api/studio/history/'): return self.send(studio_store.history(path.rsplit('/',1)[1]))
@@ -312,6 +315,9 @@ class Handler(BaseHTTPRequestHandler):
             if local_agent.busy(): raise ValueError('Local agent is working. Pause or stop it before manual changes or model controls.')
             import advanced_studio
             if advanced_studio.LOCK.locked() and (action in ('ai/start','production/comfy-start','render') or (action=='studio/command' and data.get('action') in ('render','transcribe'))): raise ValueError('Wait for the local 3D or media worker')
+            if action=='workspace/open':
+                import workspaces
+                return self.send(workspaces.open_workspace(data))
             if action=='studio/command': return self.send(studio_api.command(data))
             if action.startswith('ai') and action=='ai/start' and studio_api.WORK.locked(): raise ValueError('Wait for studio finishing work')
             if action.startswith('ai/'):

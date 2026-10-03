@@ -36,6 +36,18 @@ def models():
     manifest = ROOT / 'Studio/ai-models.json'
     result = json.loads(manifest.read_text()) if manifest.exists() else []
     result += [dict(id='light', name='Qwen3 8B Â· Lightweight', file='Models/llm/Qwen3-8B-Q4_K_M.gguf', verified=True)]
+    import workspaces
+    if workspaces.is_incognito():
+        shared = workspaces.INSTALL / 'Studio/ai-models.json'
+        inherited = json.loads(shared.read_text()) if shared.exists() else []
+        own_ids = {m['id'] for m in result if m['id'] != 'light'}
+        for m in inherited:
+            if m['id'] not in own_ids:
+                m = dict(m); m['file'] = 'Models/Shared-SFW/' + str(Path(m['file']).relative_to('Models')).replace('\\', '/')
+                m['shared'] = True; result.append(m)
+        for m in result:
+            if m['id'] == 'light' and not (ROOT / m['file']).exists():
+                m['file'] = 'Models/Shared-SFW/llm/Qwen3-8B-Q4_K_M.gguf'; m['shared'] = True
     for item in result:
         path = ROOT / item['file']
         partial = path.with_suffix(path.suffix + '.partial')
@@ -53,7 +65,10 @@ def owned_process():
         if Path(process.exe()).resolve() != (runtime_paths.path('llama', ROOT)).resolve():
             raise ValueError('Tracked process is not the bundled model server')
         args = process.cmdline()
-        if '-m' not in args or not Path(args[args.index('-m') + 1]).resolve().is_relative_to((ROOT / 'Models').resolve()):
+        import workspaces
+        allowed_models = [(ROOT / 'Models').resolve()]
+        if workspaces.is_incognito(): allowed_models.append((workspaces.INSTALL / 'Models').resolve())
+        if '-m' not in args or not any(Path(args[args.index('-m') + 1]).resolve().is_relative_to(base) for base in allowed_models):
             raise ValueError('Tracked model is outside this project')
         return process
     except psutil.NoSuchProcess:
@@ -79,6 +94,8 @@ def stop():
 
 
 def start(data):
+    import workspaces
+    workspaces.guard_other_workers()
     selected = next((m for m in models() if m['id'] == data.get('model')), None)
     if not selected or not selected['ready']:
         raise ValueError('Selected model is not downloaded and verified yet')

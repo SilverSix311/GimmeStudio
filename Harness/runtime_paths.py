@@ -1,5 +1,6 @@
 """Resolve project-owned runtimes on Windows, Linux and macOS. Never search PATH."""
 import json
+import os
 import platform
 from pathlib import Path
 
@@ -13,7 +14,12 @@ def settings(root=ROOT):
 
 def owned(root, value):
     path = root / value
-    if not path.resolve().is_relative_to(root.resolve()):
+    install = Path(os.environ.get('GIMMESTUDIO_INSTALL_ROOT', str(root))).resolve()
+    resolved = path.resolve()
+    local = resolved.is_relative_to(root.resolve())
+    shared_tool = root.resolve() == install / 'Incognito' and any(
+        resolved.is_relative_to(install / folder) for folder in ('Tools','ComfyUI_windows_portable'))
+    if not local and not shared_tool:
         raise ValueError('Runtime must remain inside the studio folder')
     return path
 

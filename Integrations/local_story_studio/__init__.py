@@ -1,10 +1,11 @@
 """Serve the explicitly staged local studio graph to the ComfyUI frontend."""
 import json
+import os
 from pathlib import Path
 from aiohttp import web
 from server import PromptServer
 
-ROOT=Path(__file__).resolve().parents[4]
+ROOT=Path(os.environ.get('GIMMESTUDIO_WORKSPACE_ROOT', str(Path(__file__).resolve().parents[4]))).resolve()
 
 @PromptServer.instance.routes.get('/local-story-studio/staged')
 async def staged(request):

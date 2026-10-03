@@ -38,3 +38,7 @@ Source control should contain application code, launchers, documentation and rev
 ## Current limits
 
 See the in-app Tool catalog for validation status. Portrait lip-sync remains experimental on stylized faces. Whole-project Higgsfield synchronization, moving-video mask replacement, automatic face tracking and dedicated music generation are not completed integrations. Cloud asset upload requires a developer account and explicit action; no cloud generation runs automatically.
+
+## Incognito workspace
+
+The header toggle opens a separate persistent workspace for private/NSFW productions. Its projects, assets, history and chat settings stay under `Incognito/`. It reuses shared SFW models/LoRAs without copying weights and supports its own model library. This is content organization, not encryption or automatic NSFW detection. See [workspace separation](Docs/guide/Incognito-workspace.md).

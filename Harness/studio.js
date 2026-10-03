@@ -74,3 +74,15 @@ function board(){
 }
 
 function tools(){$('#content').innerHTML=`<p>Actual local capabilities and their validation state. Model-specific tools become available after their adapter and dependencies are installed and tested.</p><div class="toolbar"><a href="/studio-file/Studio/GimmeStudio-guide.txt" target="_blank">Read the studio guide & API reference ↗</a><a href="/studio-file/Studio/research/cinema-studio-2026-10-02/index.html" target="_blank">Original research & architecture ↗</a></div><div class="grid">${(catalog.capabilities.features||[]).map(f=>`<article class="card"><span class="pill">${esc(f.status)}</span><h3>${esc(f.name)}</h3><p>${esc(f.detail)}</p>${f.page?`<a href="#${f.page}">Open tool →</a>`:'<small>Not available in this installation yet</small>'}</article>`).join('')}</div>`;}
+
+// Different origins keep browser selections and local chat UI state separate.
+safe(async()=>{
+ const workspace=await api('/api/workspace');
+ const privateMode=workspace.mode==='incognito';
+ const toggle=$('#workspace-toggle');
+ toggle.textContent=privateMode?'Incognito ON - Return to SFW':'SFW - Open Incognito';
+ toggle.title=workspace.message;
+ document.body.classList.toggle('incognito',privateMode);
+ if(privateMode){document.title='GimmeStudio - Incognito';const banner=document.createElement('p');banner.className='incognito-banner';banner.textContent='INCOGNITO - Separate persistent projects, files and history. Shared SFW models are available. Not encrypted or auto-deleted.';document.querySelector('header').after(banner);}
+ toggle.onclick=safe(async()=>{toggle.disabled=true;try{const result=await api('/api/workspace/open',{mode:privateMode?'sfw':'incognito'});location.assign(result.url);}finally{toggle.disabled=false;}});
+})();

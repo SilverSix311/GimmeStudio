@@ -13,7 +13,7 @@ class LocalAITest(unittest.TestCase):
                 local_ai.chat_path(key)
 
     def test_model_load_requires_comfy_shutdown(self):
-        with patch.object(local_ai, 'models', return_value=[{'id':'test','ready':True}]), patch.object(local_ai.comfy_service, 'status', return_value={'running':True}), patch.object(local_ai, 'stop') as stop:
+        with patch('workspaces.guard_other_workers'), patch.object(local_ai, 'models', return_value=[{'id':'test','ready':True}]), patch.object(local_ai.comfy_service, 'status', return_value={'running':True}), patch.object(local_ai, 'stop') as stop:
             with self.assertRaisesRegex(ValueError, 'Shut down'):
                 local_ai.start({'model':'test'})
             stop.assert_not_called()

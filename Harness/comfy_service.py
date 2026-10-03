@@ -56,6 +56,8 @@ def stop(_data):
 
 
 def start(_data):
+    import workspaces
+    workspaces.guard_other_workers()
     if owned_process() is None:
         command = [str(runtime_paths.path('python', ROOT)), '-s',
                    str(runtime_paths.path('comfy', ROOT) / 'main.py'), '--listen', '127.0.0.1',
@@ -64,6 +66,9 @@ def start(_data):
                                ('user', 'User'), ('temp', 'Cache/temp')]:
             command += ['--' + option + '-directory', str(ROOT / folder)]
         command += runtime_paths.comfy_args(ROOT)
+        shared_config = ROOT / 'Studio/shared-model-paths.yaml'
+        if workspaces.is_incognito() and shared_config.exists():
+            command += ['--extra-model-paths-config', str(shared_config)]
         # Inherit the dashboard's workspace-scoped caches, and detach console/log handles.
         with (ROOT / 'Logs/comfy.out.log').open('w') as out, (ROOT / 'Logs/comfy.err.log').open('w') as err:
             process = subprocess.Popen(command, cwd=ROOT, stdin=subprocess.DEVNULL, stdout=out, stderr=err,
