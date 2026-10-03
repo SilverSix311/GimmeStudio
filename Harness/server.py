@@ -264,13 +264,16 @@ class Handler(BaseHTTPRequestHandler):
                 import local_agent
                 return self.send(local_agent.public(path.rsplit('/',1)[1]))
             if path=='/api/studio': return self.send(studio_api.status())
+            if path=='/api/studio/loras':
+                import shot_controls
+                return self.send({'items':shot_controls.inventory(ROOT)})
             if path=='/api/studio/services':
                 import advanced_studio, local_agent
                 return self.send({'planner_running': bool(local_ai.owned_process()), 'agent_busy':local_agent.busy(), 'comfy':production.comfy_service.status(), 'production':dict(production.JOB),
                                   'ai':dict(local_ai.JOB), 'studio_finishing':studio_api.WORK.locked(), 'advanced_busy':advanced_studio.LOCK.locked()})
             if path.startswith('/api/studio/project/'): return self.send(studio_store.get(path.rsplit('/',1)[1]))
             if path.startswith('/api/studio/history/'): return self.send(studio_store.history(path.rsplit('/',1)[1]))
-            if path in ('/studio.js','/studio.css','/advanced.js','/help.js','/agent.js'):
+            if path in ('/studio.js','/studio.css','/advanced.js','/help.js','/agent.js','/creative_tools.js'):
                 return self.send((ROOT/'Harness'/path[1:]).read_bytes(),kind='text/javascript' if path.endswith('.js') else 'text/css')
             if path=='/legacy': return self.send((ROOT/'Harness/dashboard.html').read_bytes(),kind='text/html; charset=utf-8')
             if path=='/api/ai': return self.send(local_ai.state())

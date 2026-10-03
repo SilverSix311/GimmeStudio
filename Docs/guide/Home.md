@@ -20,5 +20,6 @@ Start with [Start here: your first film](Start-here.md).
 - [Troubleshooting and known limits](Troubleshooting.md) — Recover from common setup, model and workflow problems.
 - [Assistant and API reference](Assistant-and-API.md) — Use the same revisioned commands as the dashboard.
 - [Incognito and SFW workspaces](Incognito-workspace.md) — Keep private/NSFW productions separate while reusing model weights.
+- [LoRA library, keyframes and timeline monitor](LoRA-and-motion-controls.md) — Use visual model management, ordered shot adapters and source-frame editing.
 
 Updated 2026-10-03. These guides describe the current local implementation.

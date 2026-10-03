@@ -1,0 +1,19 @@
+{
+  "anima": {
+    "source": "https://huggingface.co/circlestone-labs/Anima",
+    "revision": "f973fc41ec7545364ac9776c2440285f43ff2a30",
+    "files": [
+      {"remote": "split_files/diffusion_models/anima-turbo-v1.1.safetensors", "local": "diffusion_models/anima-turbo-v1.1.safetensors", "sha256": "fba11953276b57edf59d1dc4f1857ac05aa079c56f982b4d7c20298d57d3f7eb"},
+      {"remote": "split_files/text_encoders/qwen_3_06b_base.safetensors", "local": "text_encoders/qwen_3_06b_base.safetensors", "sha256": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"}
+    ],
+    "requires": ["vae/qwen_image_vae.safetensors"]
+  },
+  "orbit": {
+    "source": "https://huggingface.co/pablodawson/MiniMax-H3-360-Orbit-LoRA",
+    "revision": "5ddbc2dbbe95edbbdaf5017c3e934b1d01791697",
+    "files": [
+      {"remote": "minimax_h3_flf2v_lora_v1.safetensors", "local": "loras/minimax_h3_flf2v_lora_v1.safetensors", "sha256": "14f13e3effaf3e729fdc0c97680344aa63f473be0c55963f963d718b3db2a4d4"}
+    ],
+    "requires": ["diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors"]
+  }
+}

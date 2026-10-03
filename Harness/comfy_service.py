@@ -71,7 +71,8 @@ def start(_data):
             command += ['--extra-model-paths-config', str(shared_config)]
         # Inherit the dashboard's workspace-scoped caches, and detach console/log handles.
         with (ROOT / 'Logs/comfy.out.log').open('w') as out, (ROOT / 'Logs/comfy.err.log').open('w') as err:
-            process = subprocess.Popen(command, cwd=ROOT, stdin=subprocess.DEVNULL, stdout=out, stderr=err,
+            import lora_library
+            process = subprocess.Popen(command, cwd=ROOT, env=lora_library.environment(ROOT), stdin=subprocess.DEVNULL, stdout=out, stderr=err,
                                        creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
         (ROOT / 'Logs/comfy.pid').write_text(str(process.pid), encoding='utf-8')
     for _ in range(60):

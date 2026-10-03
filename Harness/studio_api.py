@@ -13,6 +13,7 @@ import zipfile
 from pathlib import Path
 import production
 import studio_store as store
+import shot_controls
 
 ROOT = store.ROOT
 WORK = threading.Lock()
@@ -119,14 +120,14 @@ def clean_record(p, kind, value):
         'elements': ('name', 'kind', 'description', 'pronouns', 'trigger', 'notes', 'references'),
         'scenes': ('name', 'description', 'lighting', 'palette', 'notes', 'elements'),
         'shots': ('name', 'prompt', 'camera', 'dialogue', 'duration', 'seed', 'scene', 'elements', 'selected', 'notes',
-                  'framing', 'lens', 'aperture', 'movement', 'lighting', 'palette'),
+                  'framing', 'lens', 'aperture', 'movement', 'lighting', 'palette', 'loras', 'first_frame', 'last_frame'),
         'assets': ('name', 'review', 'notes', 'folder', 'caption', 'split', 'group', 'element'),
     }
     if kind not in fields:
         raise ValueError('Unknown editor collection')
     result = {k:value[k] for k in fields[kind] if k in value}
     for key, val in result.items():
-        if key not in ('references', 'elements', 'duration', 'seed') and (not isinstance(val, str) or len(val) > 20000):
+        if key not in ('references', 'elements', 'duration', 'seed', 'loras') and (not isinstance(val, str) or len(val) > 20000):
             raise ValueError('Invalid ' + key)
     if not str(result.get('name', '')).strip():
         raise ValueError('Give this item a name')
@@ -141,6 +142,11 @@ def clean_record(p, kind, value):
                 if field == 'references' and target['kind'] != 'image':
                     raise ValueError('Element references must be images')
     if kind == 'shots':
+        if 'loras' in result:
+            result['loras'] = shot_controls.validate_stack(result['loras'])
+        for field in ('first_frame', 'last_frame'):
+            if result.get(field) and item(p, 'assets', result[field])['kind'] != 'image':
+                raise ValueError('Keyframes must be project images')
         result['duration'] = float(result.get('duration', 5))
         result['seed'] = int(result.get('seed', 4102026))
         if not math.isfinite(result['duration']) or not 1 <= result['duration'] <= 120 or not 0 <= result['seed'] < 2**53:
@@ -162,7 +168,7 @@ def stage(p, data):
         raise ValueError('Another workflow is being staged')
     try:
         mode = data.get('mode', 'krea')
-        if mode not in ('krea', 'reference', 'h3'):
+        if mode not in ('krea', 'reference', 'h3', 'anima'):
             raise ValueError('Unknown generation workflow')
         shot = item(p, 'shots', data['shot']) if data.get('shot') else None
         element = item(p, 'elements', data['element']) if data.get('element') else None
@@ -183,25 +189,31 @@ def stage(p, data):
         seed = int(data.get('seed', (shot or {}).get('seed', 4102026)))
         if not 0 <= seed < 2**53:
             raise ValueError('Seed is out of range')
-        base = ROOT / ('Workflows/maxi-comparison/reference-55-hi' if mode == 'reference' else 'Workflows/krea-h3-lab/' + mode)
+        motion = data.get('motion_recipe', 'turbo')
+        if motion not in ('turbo', 'orbit'):
+            raise ValueError('Unknown motion recipe')
+        base = ROOT / ('Workflows/maxi-comparison/reference-55-hi' if mode == 'reference' else 'Workflows/krea-h3-lab/' + ('krea' if mode == 'anima' else mode))
         graph, canvas = read_json(base.with_suffix('.api.json')), read_json(base.with_suffix('.json'))
+        shot_controls.configure(graph, canvas, mode, motion)
         changes = {}
         if mode == 'h3':
-            width, height = 608, 352
-            changes = {'7':dict(prompt=text, width=width, height=height, length=124), '9':dict(noise_seed=seed)}
+            width, height = (768,768) if motion == 'orbit' else (608,352)
+            changes = {'7':dict(prompt=text, width=width, height=height, length=73 if motion == 'orbit' else 124), '9':dict(noise_seed=seed)}
         else:
             width, height = int(data.get('width', 1200)), int(data.get('height', 2048))
+            if mode == 'anima' and (min(width,height) < 512 or max(width,height) > 1536):
+                raise ValueError('Anima uses 512–1536 pixels per side; choose square or quick draft')
             if min(width, height) < 256 or width % 8 or height % 8 or width * height > 2500000:
                 raise ValueError('Image dimensions must be multiples of 8, at least 256, and at most 2.5 MP')
             changes['4'] = dict(text=text)
-            if mode == 'krea':
+            if mode in ('krea', 'anima'):
                 changes.update({'6':dict(width=width, height=height), '7':dict(seed=seed)})
             else:
                 strength = float(data.get('denoise', .55))
                 if not .05 <= strength <= 1:
                     raise ValueError('Denoise must be between 0.05 and 1')
                 changes.update({'6':dict(seed=seed, denoise=strength), '11':dict(width=width, height=height)})
-        reference = data.get('reference') or ((element or {}).get('references') or [''])[0]
+        reference = data.get('reference') or (shot or {}).get('first_frame') or ((element or {}).get('references') or [''])[0]
         if mode in ('reference', 'h3'):
             a = item(p, 'assets', reference)
             if a['kind'] != 'image':
@@ -229,20 +241,38 @@ def stage(p, data):
             updates = changes.get(str(node['id']), {})
             if updates:
                 graph[str(node['id'])]['inputs'].update(updates)
+                node.pop('widgets_values_named', None)
                 names = widget_names[node['type']]
                 for key, val in updates.items():
                     node['widgets_values'][names.index(key)] = val
                 node['title'] = node['type'] + ' Â· GimmeStudio'
+        last_frame = data.get('last_frame', (shot or {}).get('last_frame', ''))
+        if motion == 'orbit':
+            last_frame = reference
+            if 'minimax_h3_flf2v_lora_v1.safetensors' not in {r['name'] for r in shot_controls.inventory(ROOT)}:
+                raise ValueError('Install the 360 orbit LoRA before staging this recipe')
+        last_image = None
+        if last_frame:
+            if item(p, 'assets', last_frame)['kind'] != 'image':
+                raise ValueError('Last frame must be a project image')
+            source = source_of(p, last_frame)
+            target = ROOT / 'Input/gimmestudio' / p['id'] / source.name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if not target.exists():
+                shutil.copy2(source, target)
+            last_image = target.relative_to(ROOT / 'Input').as_posix()
+        stack = data.get('loras', (shot or {}).get('loras', []))
+        shot_controls.apply(graph, canvas, mode, stack, ROOT, last_image)
         canvas.setdefault('extra', {})['gimmestudio'] = dict(project=p['id'], job=jobid, shot=data.get('shot'), element=data.get('element'))
         folder = ROOT / 'Projects' / p['id'] / 'workflows' / jobid
         production.write(folder / 'canvas.json', canvas)
         production.write(folder / 'prompt.json', graph)
         job = dict(id=jobid, type=mode, status='staged', created=time.time(), shot=data.get('shot'), element=data.get('element'),
-                   reference=reference, seed=seed, width=width, height=height, prompt=text,
+                   reference=reference, last_frame=last_frame, motion_recipe=motion, loras=stack, seed=seed, width=width, height=height, prompt=text,
                    canvas=production.relative(folder / 'canvas.json'), graph=production.relative(folder / 'prompt.json'))
         updated = store.mutate(p['id'], data['revision'], 'stage', lambda doc:doc['jobs'].append(job))
         production.write(ROOT / 'Harness/staged-workflow.json', dict(title=p['title'] + ' / ' + mode, stage_id=jobid, workflow=canvas))
-        return dict(project=updated, message='Workflow staged. Load studio shot in the visible ComfyUI canvas, then Run. H3 uses the validated 608Ã—352 / 124-frame draft preset.' if mode == 'h3' else 'Workflow staged. Load studio shot in ComfyUI, inspect the graph, then Run.')
+        return dict(project=updated, message='Workflow staged. Load studio shot in ComfyUI, inspect the graph, then Run. Orbit and additional LoRA combinations need visual review.')
     finally:
         STAGE.release()
 
