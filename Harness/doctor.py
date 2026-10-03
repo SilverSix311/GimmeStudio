@@ -1,4 +1,7 @@
 """Offline checks; never downloads or starts model workers."""
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import runtime_paths
 import importlib.util
 import json
