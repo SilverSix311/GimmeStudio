@@ -71,6 +71,8 @@ if ($WithBlender -and -not (Test-Path -LiteralPath "$PSScriptRoot/Tools/blender-
 }
 & $python -s "$PSScriptRoot/Harness/initialize_portable.py"
 if ($LASTEXITCODE -ne 0) { throw 'Studio initialization failed.' }
+& $python -s "$PSScriptRoot/Harness/build_help.py"
+if ($LASTEXITCODE -ne 0) { throw 'Help generation failed.' }
 & $python -s "$PSScriptRoot/Harness/doctor.py"
 if ($LASTEXITCODE -ne 0) { throw 'Portable installation checks failed.' }
 Write-Host 'Setup complete. Run GimmeStudio.cmd. Models are separate downloads; see Docs/INSTALL.md.'
