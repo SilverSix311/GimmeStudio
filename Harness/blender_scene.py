@@ -40,7 +40,34 @@ camera=bpy.data.cameras.new('Studio camera');obj=bpy.data.objects.new('Studio ca
 scene.camera=obj;camera.lens=data['camera']['lens'];obj.location=data['camera']['position']
 obj.rotation_euler=(Vector(data['camera']['target'])-obj.location).to_track_quat('-Z','Y').to_euler()
 scene.render.image_settings.file_format='PNG'
-scene.render.filepath=str(folder/'render.png')
+motion=data.get('motion',{'preset':'still','seconds':5})
+preset=motion['preset']
+scene.render.fps=24
+scene.render.film_transparent=False
+frames=1 if preset=='still' else round(motion['seconds']*24)
+scene.frame_start=1;scene.frame_end=frames
+start=Vector(data['camera']['position']);target=Vector(data['camera']['target'])
+# Bake eased camera positions so the editable blend matches the rendered preview.
+for frame in range(1,frames+1):
+ t=(frame-1)/max(1,frames-1);ease=t*t*(3-2*t);offset=start-target
+ if preset=='orbit':
+  angle=math.radians(90)*ease;c=math.cos(angle);s=math.sin(angle)
+  pos=target+Vector((offset.x*c-offset.y*s,offset.x*s+offset.y*c,offset.z))
+ elif preset in ('dolly-in','dolly-out'):
+  pos=target+offset*(1+(-.35 if preset=='dolly-in' else .35)*ease)
+ elif preset in ('truck-left','truck-right'):
+  right=offset.cross(Vector((0,0,1))).normalized()
+  pos=start+right*(2*ease*(1 if preset=='truck-right' else -1))
+ else:pos=start
+ obj.location=pos;obj.rotation_euler=(target-pos).to_track_quat('-Z','Y').to_euler()
+ if frames>1:
+  obj.keyframe_insert(data_path='location',frame=frame);obj.keyframe_insert(data_path='rotation_euler',frame=frame)
+scene.frame_set(1)
+if frames>1:
+ (folder/'frames').mkdir(exist_ok=True)
+ scene.render.filepath=str(folder/'frames')+'/'
+else:scene.render.filepath=str(folder/'render.png')
 bpy.ops.wm.save_as_mainfile(filepath=str(folder/'scene.blend'))
-bpy.ops.render.render(write_still=True)
-(folder/'result.json').write_text(json.dumps({'file':str(folder/'render.png'),'blend':str(folder/'scene.blend'),'version':bpy.app.version_string}),encoding='utf-8')
+if frames>1:bpy.ops.render.render(animation=True)
+else:bpy.ops.render.render(write_still=True)
+(folder/'result.json').write_text(json.dumps({'file':str(folder/'render.png'),'blend':str(folder/'scene.blend'),'version':bpy.app.version_string,'frames':frames if frames>1 else 0,'fps':24}),encoding='utf-8')

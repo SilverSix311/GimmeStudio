@@ -1,0 +1,14 @@
+[
+  {
+    "id": "guidemaster",
+    "repo": "MajoorWaldi/ComfyUI-Majoor-H3-GuideMaster",
+    "revision": "866d04c957999602bc756370d11492979f0ad776",
+    "sha256": "48ffbbceecf7bd97cc1165222c17e7b909803eac8d577cd027dcd756bcacabb0"
+  },
+  {
+    "id": "genkai",
+    "repo": "GENKAIx/Genkai-ComfyUI-Nodes",
+    "revision": "cfe84295183c3680fc22f9ad189a9808532a98cc",
+    "sha256": "c5eba7e82297ce6b142e6d7d3345bace80f862b964343599e645e71abce11b0d"
+  }
+]

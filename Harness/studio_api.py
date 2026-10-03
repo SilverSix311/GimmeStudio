@@ -14,6 +14,7 @@ from pathlib import Path
 import production
 import studio_store as store
 import shot_controls
+import directing
 
 ROOT = store.ROOT
 WORK = threading.Lock()
@@ -70,7 +71,7 @@ def status():
     return dict(projects=store.listing(), workflows=production.read('workflows.json', []),
                 research=production.read('research.json', []), capabilities=production.read('implementation-status.json', {}), mode='local', api='/api/studio/command',
                 operations=['create', 'project', 'put', 'delete', 'restore', 'import', 'upload', 'timeline',
-                            'stage', 'collect', 'render', 'transcribe', 'captions', 'dataset', 'training', 'export', 'import-package', 'proposal', 'board', 'workflow', 'stage-recipe', 'masked-edit', 'advanced/scene-save', 'advanced/blender-render', 'advanced/blender-rerender', 'advanced/blender-open', 'advanced/blender-launch', 'advanced/voice-save', 'advanced/speak', 'advanced/lipsync', 'cloud/plan', 'cloud/configure', 'cloud/forget', 'cloud/upload'])
+                            'stage', 'collect', 'extract-frame', 'render', 'transcribe', 'captions', 'dataset', 'training', 'export', 'import-package', 'proposal', 'board', 'workflow', 'stage-recipe', 'masked-edit', 'advanced/scene-save', 'advanced/blender-render', 'advanced/blender-rerender', 'advanced/blender-open', 'advanced/blender-launch', 'advanced/voice-save', 'advanced/speak', 'advanced/lipsync', 'cloud/plan', 'cloud/configure', 'cloud/forget', 'cloud/upload'])
 
 
 def migrate_assets():
@@ -120,14 +121,14 @@ def clean_record(p, kind, value):
         'elements': ('name', 'kind', 'description', 'pronouns', 'trigger', 'notes', 'references'),
         'scenes': ('name', 'description', 'lighting', 'palette', 'notes', 'elements'),
         'shots': ('name', 'prompt', 'camera', 'dialogue', 'duration', 'seed', 'scene', 'elements', 'selected', 'notes',
-                  'framing', 'lens', 'aperture', 'movement', 'lighting', 'palette', 'loras', 'first_frame', 'last_frame'),
+                  'framing', 'lens', 'aperture', 'movement', 'lighting', 'palette', 'loras', 'first_frame', 'last_frame', 'direction'),
         'assets': ('name', 'review', 'notes', 'folder', 'caption', 'split', 'group', 'element'),
     }
     if kind not in fields:
         raise ValueError('Unknown editor collection')
     result = {k:value[k] for k in fields[kind] if k in value}
     for key, val in result.items():
-        if key not in ('references', 'elements', 'duration', 'seed', 'loras') and (not isinstance(val, str) or len(val) > 20000):
+        if key not in ('references', 'elements', 'duration', 'seed', 'loras', 'direction') and (not isinstance(val, str) or len(val) > 20000):
             raise ValueError('Invalid ' + key)
     if not str(result.get('name', '')).strip():
         raise ValueError('Give this item a name')
@@ -151,6 +152,8 @@ def clean_record(p, kind, value):
         result['seed'] = int(result.get('seed', 4102026))
         if not math.isfinite(result['duration']) or not 1 <= result['duration'] <= 120 or not 0 <= result['seed'] < 2**53:
             raise ValueError('Invalid duration or seed')
+        if 'direction' in result:
+            result['direction'] = directing.validate(result['direction'], result, p['assets'])
         for field, collection in [('scene', 'scenes'), ('selected', 'assets')]:
             if result.get(field):
                 item(p, collection, result[field])
@@ -460,6 +463,9 @@ def export(p, dataset=None, training=False):
         (folder / 'SHOT-PACKET.txt').write_text(p['title']+'\n'+p['brief']+'\n\n'+'\n\n'.join(
             s['name']+'\n'+s.get('prompt','')+'\nCamera: '+s.get('camera','')+'\nDialogue: '+s.get('dialogue','')
             for s in p['shots'] if not s.get('deleted')), encoding='utf-8')
+    if not dataset:
+        production.write(folder / 'DIRECTION.json', directing.packet(p))
+        production.write(folder / 'DEPENDENCIES.json', directing.dependencies(p, ROOT))
     manifest['files'] = [{'file':f.relative_to(folder).as_posix(),'sha256':digest(f)} for f in folder.rglob('*') if f.is_file()]
     production.write(folder / 'manifest.json', manifest)
     if training:
@@ -538,6 +544,9 @@ def import_package(data):
             validated = asset_record(p,dest,record['name'],dict(imported_from=original['id'],original=record.get('provenance',{})))
             validated.update({k:record[k] for k in ('id','review','notes','folder','caption','split','group','element') if k in record})
             p['assets'].append(validated)
+        for shot in p['shots']:
+            if 'direction' in shot:
+                shot['direction'] = directing.validate(shot['direction'], shot, p['assets'])
         # Retain speech scripts/performance metadata with the imported media.
         for job in original.get('jobs', []):
             if job.get('type') not in ('speak', 'lipsync'):
@@ -568,6 +577,26 @@ def import_package(data):
     return dict(project=store.insert(p),message='Imported as an independent local project. Original files and project are unchanged.')
 
 
+def extract_frame(p, data):
+    import subprocess
+    import imageio_ffmpeg
+    asset = item(p, 'assets', data.get('asset'))
+    at = data.get('seconds')
+    if asset['kind'] != 'video' or isinstance(at, bool) or not isinstance(at, (int, float)) or not math.isfinite(at) or not 0 <= at < asset['duration']:
+        raise ValueError('Choose a video and a frame time before its end')
+    folder = ROOT / 'Projects' / p['id'] / 'frame-captures' / store.identifier()
+    folder.mkdir(parents=True)
+    target = folder / 'frame.png'
+    result = subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), '-v', 'error', '-ss', str(at), '-i', str(source_of(p, asset['id'])), '-frames:v', '1', str(target)], capture_output=True, timeout=60, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+    if result.returncode or not target.is_file():
+        raise ValueError('Could not decode that video frame')
+    captured = asset_record(p, target, asset['name'] + ' / ' + str(round(at, 3)) + 's',
+                            dict(source_asset=asset['id'], source_sha256=asset['sha256'], seconds=at))
+    captured['group'] = asset['sha256']  # Related video frames must share a dataset split.
+    updated = store.mutate(p['id'], data['revision'], 'extract-frame', lambda doc: doc['assets'].append(captured))
+    return dict(project=updated, message='Captured frame saved to Assets for review; no automatic approval.')
+
+
 def command(data):
     action = data.get('action')
     if action == 'import-package':
@@ -595,6 +624,8 @@ def command(data):
         return stage_recipe(p, data)
     if action == 'collect':
         return dict(project=collect(p))
+    if action == 'extract-frame':
+        return extract_frame(p, data)
     if action in ('render', 'transcribe'):
         return run_background(p, action, data)
     if action in ('export', 'dataset', 'training'):
@@ -618,7 +649,10 @@ def command(data):
             kind = data['kind']
             clean = clean_record(doc, kind, data['value'])
             if data.get('id'):
-                item(doc, kind, data['id']).update(clean)
+                target = item(doc, kind, data['id'])
+                if kind == 'shots' and 'direction' in target and 'direction' not in clean:
+                    clean['direction'] = directing.validate(target['direction'], {**target, **clean}, doc['assets'])
+                target.update(clean)
             else:
                 if kind == 'assets':
                     raise ValueError('Import an asset first')

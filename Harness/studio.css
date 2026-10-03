@@ -57,3 +57,9 @@ body.incognito{--ink:#0b080a;--rouge:#e12b4f;--blush:#f4a9b3;--ivory:#f9eae5;bac
 
 /* Source monitor shares the active workspace palette. */
 .edit-monitor{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(230px,1fr);gap:24px;align-items:center}.edit-monitor img,.edit-monitor video{display:block;width:100%;max-height:460px;object-fit:contain;background:#09090c}.edit-monitor input[type=range]{width:100%;accent-color:var(--accent)}#edit-screen{min-height:180px;background:#09090c;border-radius:12px;overflow:hidden}#edit-time{display:block;font-variant-numeric:tabular-nums;margin:12px 0}@media(max-width:850px){.edit-monitor{grid-template-columns:1fr}}
+
+.review-screen{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#08070b;border-radius:14px;overflow:hidden;--wipe:50%}
+.review-screen>div{min-width:0;display:grid;place-items:center;aspect-ratio:16/9}.review-screen video{width:100%;height:100%;object-fit:contain}
+.review-screen.wipe{display:block;position:relative}.review-screen.wipe>div{width:100%;aspect-ratio:16/9}.review-screen.wipe #review-right{position:absolute;inset:0;clip-path:inset(0 0 0 var(--wipe));background:#08070b}
+#review-cues p{padding:12px;border-left:3px solid transparent}#review-cues .active-cue{border-color:var(--accent,#e94393);background:#e9439320}
+@media(max-width:700px){.review-screen:not(.wipe){grid-template-columns:1fr}}

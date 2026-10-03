@@ -36,6 +36,11 @@ def scene_valid(value):
   if not 0<float(light['power'])<=10000 or not .01<=float(light['size'])<=100:raise ValueError('Light settings out of range')
  vector(value['camera']['position']);vector(value['camera']['target'])
  if not 10<=float(value['camera']['lens'])<=300:raise ValueError('Lens out of range')
+ motion=value.get('motion',{'preset':'still','seconds':5})
+ if not isinstance(motion,dict) or motion.get('preset') not in ('still','orbit','dolly-in','dolly-out','truck-left','truck-right'):raise ValueError('Choose a supported camera move')
+ seconds=motion.get('seconds',5)
+ if isinstance(seconds,bool) or not isinstance(seconds,(float,int)) or not math.isfinite(seconds) or not 1<=seconds<=15:raise ValueError('Camera moves must last 1–15 seconds')
+ value['motion']={'preset':motion['preset'],'seconds':seconds}
  if tuple((value['width'],value['height'])) not in ((640,360),(1280,720),(1920,1080)):raise ValueError('Choose a supported render size')
  return value
 
@@ -134,6 +139,12 @@ def dispatch(p,data):
     args=[str(BLENDER),'--background','--factory-startup','--disable-autoexec','--python',str(ROOT/'Harness/blender_scene.py'),'--',str(folder/'input.json')]
    else:args=[str(PYTHON),str(ROOT/'Harness/media_worker.py'),action,str(folder/'input.json')]
    result=run_process(args,folder)
+   if result.get('frames'):
+    import imageio_ffmpeg
+    video=folder/'camera-preview.mp4'
+    with (folder/'encode.log').open('w',encoding='utf-8') as log:
+     subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(),'-y','-framerate',str(result['fps']),'-i',str(folder/'frames/%04d.png'),'-c:v','libx264','-pix_fmt','yuv420p',str(video)],check=True,stdout=log,stderr=log,timeout=300,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+    result['file']=str(video)
    source=Path(result['file']);asset=api.asset_record(p,source,('3D render Â· '+payload['name']) if action.startswith('blender-') else 'Voice take' if action=='speak' else 'Lip-sync take',dict(job=key,adapter=action,input=production.relative(folder/'input.json')))
    result['file']=asset['file']
    if result.get('blend'):result['blend']=production.relative(Path(result['blend']))

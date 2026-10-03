@@ -15,7 +15,7 @@ def owned_dashboard():
         return None
     try:
         process = psutil.Process(int(pidfile.read_text().strip()))
-        if Path(process.exe()).resolve() != path('python').resolve() or str(ROOT / 'Harness/server.py') not in process.cmdline():
+        if Path(process.exe()).resolve() != path('python').resolve() or not any(Path(arg).is_absolute() and Path(arg).resolve() == (ROOT / 'Harness/server.py').resolve() for arg in process.cmdline()[1:] if not arg.startswith('-')):
             raise ValueError('Tracked PID is not this studio dashboard')
         return process
     except psutil.NoSuchProcess:
